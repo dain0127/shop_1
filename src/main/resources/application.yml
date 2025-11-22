@@ -1,0 +1,42 @@
+sever:
+  port:8081
+
+spring:
+  application:
+    name: shop
+
+
+  ####################################
+  # MySql Setting
+  ####################################
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shop?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+    username: dain0127
+    password: 1234
+
+  ####################################
+  # JPA Setting
+  ####################################
+  jpa:
+    open-in-view: true      #
+    hibernate:
+      ddl-auto: create      # create, update, none, create-drop, validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true          # SQL ?? ???
+    properties:
+      hibernate:
+        format_sql: true    # ?? ???? ???
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # MySQL8 ?? ??
+
+####################################
+# 로그 정보 설정
+####################################
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace  # 물음표에 바인드 파라미터 출력
