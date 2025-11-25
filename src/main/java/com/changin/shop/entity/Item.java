@@ -5,6 +5,8 @@ import com.changin.shop.constant.ItemSellStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Item {
+
+    public static int TestVariable = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +34,16 @@ public class Item {
 
     private int stockNumber; //재고 수량
 
+    @Lob
     @Column(nullable = false)
     private String itemDetail; //상품 상세 설명
 
+    @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //아이템 판매 상태
 
+    //@CreatedDate
     private LocalDateTime regTime; // 상품 등록 날짜
 
+    //@LastModifiedDate
     private LocalDateTime updateTime; // 상품 수정 날짜
 }
