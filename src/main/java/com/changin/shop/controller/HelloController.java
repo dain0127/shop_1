@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @RequestMapping(value="/", method=RequestMethod.GET)
+    @RequestMapping(value="/rest", method=RequestMethod.GET)
     public UserDto hello(){
         UserDto userDto = UserDto.builder().name("ㅁㅁㅁㅁ").age(10).build();
 
