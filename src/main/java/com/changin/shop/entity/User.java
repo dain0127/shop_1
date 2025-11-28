@@ -2,8 +2,15 @@ package com.changin.shop.entity;
 
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
