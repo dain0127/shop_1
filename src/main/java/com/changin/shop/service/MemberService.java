@@ -15,23 +15,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
+    @Autowired
     final private MemberRepository memberRepo;
 
-    public void validateDuplicationMember(Member member) throws Exception{
-        if(memberRepo.findByEmaile(member.getEmail()).isPresent()){
-            throw new IllegalArgumentException("================"+member.getEmail()+"은 중복된 이메일입니다.");
+    public void validateDuplicationMember(Member member) {
+        if(memberRepo.findByEmail(member.getEmail()).isPresent()){
+            throw new IllegalArgumentException("중복된 이메일입니다.");
         }
     }
 
     public Member saveMember(Member member) {
-        try {
+        //try {
             validateDuplicationMember(member);
             return memberRepo.save(member);
-        }catch (Exception e){
-            log.info(e.getMessage());
-            e.getStackTrace();
-            return null;
-        }
+//        }catch (Exception e){
+//            log.info(e.getMessage());
+//            e.getStackTrace();
+//            return null;
+//        }
     }
 
 }
