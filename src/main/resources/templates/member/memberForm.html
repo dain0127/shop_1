@@ -55,6 +55,8 @@
         <div class="mb-3" style="text-align: center">
             <button type="submit" class="btn btn-primary">제출</button>
         </div>
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     </form>
 
 </div>
