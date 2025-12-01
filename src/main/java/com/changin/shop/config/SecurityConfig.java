@@ -1,4 +1,4 @@
-package com.changin.shop.comfig;
+package com.changin.shop.config;
 
 
 import org.springframework.context.annotation.Bean;
@@ -20,6 +20,9 @@ public class SecurityConfig {
         http
                 .formLogin(Customizer.withDefaults())
                 .logout(Customizer.withDefaults());
+
+        http.csrf
+
         return http.build();
     }
 
