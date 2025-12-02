@@ -24,3 +24,11 @@ body {
     margin-left: 200px;
     margin-right: 200px;
 }
+
+.error {
+    color: red;
+    /* 필요하면 더 꾸밀 수도 있음
+    font-weight: bold;
+    margin-top: 5px;
+    */
+}

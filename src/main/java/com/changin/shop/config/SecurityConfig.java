@@ -27,14 +27,24 @@ public class SecurityConfig {
                         .permitAll() //?
                 );
 
+        http.logout(logout ->
+                logout.logoutUrl("/member/logout")
+                        .logoutSuccessUrl("/member/login"));
+
 
         http.authorizeHttpRequests(request -> request
                 //해당 css또한 권한 무관하게 허용해야, style이 제대로 적용됨.
                 .requestMatchers("/css/**", "/js/**").permitAll()
                 //request에서 해당 url의 인증 절차 없이 허용
                 .requestMatchers("/", "/member/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() //다른 request에 대해서는 인증 요청
             );
+
+
+        //인증되지 않은 페이지로, 사용자가 들어갔을 때의, '예의 처리'
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }

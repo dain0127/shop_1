@@ -6,37 +6,75 @@ import com.changin.shop.entity.Member;
 import com.changin.shop.repository.MemberRepository;
 import groovy.util.logging.Slf4j;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders;
+import org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureMockMvc
 class MemberServiceTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private MockMvc mockMvc; //테스트에 필요한 기능만 가지는 가짜 객체
+
+
+    private final String defualtPassword = "1234";
 
 
     public Member createMember() {
         MemberFormDto dto = MemberFormDto.builder()
                 .name("changin")
-                .email("dain0126@naver.com")
-                .password("1234")
+                .email("111@111")
+                .password(defualtPassword)
                 .address("aaa")
                 .build();
 
         return Member.createMember(dto, passwordEncoder);
+    }
+
+    @Test
+    @DisplayName("로그인 성공 테스트")
+    void loginTest() throws Exception {
+        Member member = createMember();
+        memberService.saveMember(member); //암호화된 password가 db에 저장
+
+        mockMvc.perform(formLogin().userParameter("email")
+                .loginProcessingUrl("/member/login")
+                .user(member.getEmail()).password(defualtPassword)) //평문
+                .andExpect(SecurityMockMvcResultMatchers.authenticated());
+
+    }
+
+    @Test
+    @DisplayName("관리자 로그인 성공 테스트")
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void adminLoginTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
     }
 
 
