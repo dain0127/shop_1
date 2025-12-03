@@ -46,4 +46,17 @@ public class Member {
 
         return newMember;
     }
+
+    public static Member createAdminMember(MemberFormDto dto, PasswordEncoder passwordEncoder) {
+        Member newMember = Member.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .address(dto.getAddress())
+                .role(Role.Admin)
+                .build();
+
+
+        return newMember;
+    }
 }

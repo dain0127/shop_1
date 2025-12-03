@@ -5,23 +5,20 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="Person")
 @Setter
 @Getter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "cart_id")
     private Long id;
 
-    @Column(length = 30)
-    private String name;
-
-    @Column
-    private int age;
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 }

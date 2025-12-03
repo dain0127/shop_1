@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders;
 import org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
+//@TestPropertySource(locations = "classpath:application-test.properties")
 class MemberServiceTest {
 
     @Autowired
@@ -55,6 +57,27 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("관리자 로그인 성공 테스트")
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void adminLoginTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
+                .andDo(print()) //콘솔 창에 띄우기
+                .andExpect(status().isNotFound()); //해당 url을 아직 만들지 않았음.
+
+    }
+
+    @Test
+    @DisplayName("관리자 로그인 성공 테스트")
+    @WithMockUser(username = "user", roles = "USER")
+    void userLoginTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+
+
+    @Test
     @DisplayName("로그인 성공 테스트")
     void loginTest() throws Exception {
         Member member = createMember();
@@ -67,15 +90,6 @@ class MemberServiceTest {
 
     }
 
-    @Test
-    @DisplayName("관리자 로그인 성공 테스트")
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    void adminLoginTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-    }
 
 
     @Test
