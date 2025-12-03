@@ -36,7 +36,7 @@ public class Order {
 
     //외래키로 참조하고 있는 쪽이 JPA에서는 주인.
     //이쪽은 주인이 아님.
-    @OneToMany(fetch =  FetchType.LAZY, mappedBy = "order")
+    @OneToMany(fetch =  FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
 }
