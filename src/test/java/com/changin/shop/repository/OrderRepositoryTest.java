@@ -48,9 +48,11 @@ public class OrderRepositoryTest {
         return item;
     }
 
+
     @Test
     @DisplayName("영속성 전이 테스트")
     public void cascadeTest(){
+        //given
         Order order = new Order();
 
         for(int i=0;i<3;i++){
@@ -66,13 +68,40 @@ public class OrderRepositoryTest {
             order.getOrderItems().add(orderItem);
         }
 
+        //when
         orderRepository.saveAndFlush(order);
         em.clear();
 
 
+        //then
         Order savedOrder = orderRepository.findById(order.getId())
                 .orElseThrow(EntityNotFoundException::new);
         assertEquals(3, savedOrder.getOrderItems().size());
+    }
+
+    @Test
+    @DisplayName("고아 삭제 테스트")
+    public void orphanRemovalTest(){
+        //given
+        Order order = new Order();
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+
+        order.getOrderItems().add(orderItem);
+
+        orderRepository.saveAndFlush(order);
+        em.clear();
+
+        //when
+        Order savedOrder = orderRepository.findById(order.getId())
+                        .orElseThrow(EntityNotFoundException::new);
+        savedOrder.getOrderItems().removeFirst();
+        em.flush();
+
+        //then
+        assertEquals(0, savedOrder.getOrderItems().size());
+
 
     }
 
