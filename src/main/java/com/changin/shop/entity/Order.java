@@ -1,5 +1,6 @@
 package com.changin.shop.entity;
 
+import com.changin.shop.common.entity.BaseEntity;
 import com.changin.shop.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,11 +14,11 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@ToString
+@ToString(callSuper=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

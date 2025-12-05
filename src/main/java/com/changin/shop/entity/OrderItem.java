@@ -1,17 +1,18 @@
 package com.changin.shop.entity;
 
 
+import com.changin.shop.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Setter
 @Getter
-@ToString
+@ToString(callSuper=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItem {
+public class OrderItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,23 +9,28 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
+@Transactional
 public class ItemRepositoryTest {
 
+    private static final Logger log = LoggerFactory.getLogger(ItemRepositoryTest.class);
     @Autowired
     ItemRepository itemRepo;
 
@@ -33,7 +38,7 @@ public class ItemRepositoryTest {
     private EntityManager em;
 
 
-    public void createItemList() {
+    public void saveItemList() {
         for(int i=1;i<=10;i++){
 
             //번갈아가면서 판매 상태 세팅
@@ -45,8 +50,6 @@ public class ItemRepositoryTest {
                     .stockNumber(1)
                     .itemDetail("hello"+i)
                     .itemSellStatus(st)
-                    .regTime(LocalDateTime.now())
-                    .updateTime(LocalDateTime.now())
                     .build();
 
             itemRepo.save(item);
@@ -54,9 +57,37 @@ public class ItemRepositoryTest {
     }
 
     @Test
+    @DisplayName("item 생성/수정 시간 테스트")
+    @WithMockUser(username = "testUserName", roles = "USER")
+    public void createAndModifyItem(){
+        //given
+        Item item = Item.builder()
+                .itemNm("0")
+                .price(10000)
+                .stockNumber(1)
+                .itemDetail("hello")
+                .itemSellStatus(ItemSellStatus.SELL)
+                .build();
+
+
+        //when
+        itemRepo.save(item);
+
+        em.flush();
+        em.clear();
+
+        //then
+        Item savedItem = itemRepo.findByItemNm("0").getFirst();
+        log.info(savedItem.toString());
+    }
+
+
+
+
+    @Test
     @DisplayName("querydsl predicate executor 테스트")
     public void querydslTest2(){
-        createItemList();
+        saveItemList();
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         QItem item = QItem.item;
         String itemSellStatus = null;
@@ -84,7 +115,7 @@ public class ItemRepositoryTest {
     @Test
     @DisplayName("querydsl 테스트")
     public void querydslTest(){
-        createItemList();
+        saveItemList();
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         QItem qItem = QItem.item;
 
@@ -105,7 +136,7 @@ public class ItemRepositoryTest {
     @Test
     @DisplayName("JPQL native 테스트")
     public void findByNativeDetailTest(){
-        createItemList();
+        saveItemList();
         itemRepo.findByNativeDetail("1")
                 .forEach((item) -> {System.out.println(item);});
     }
@@ -114,7 +145,7 @@ public class ItemRepositoryTest {
     @Test
     @DisplayName("JPQL 테스트")
     public void findByDetailTest(){
-        createItemList();
+        saveItemList();
         itemRepo.findByDetail("1")
                 .forEach((item) -> {System.out.println(item);});
     }
@@ -123,7 +154,7 @@ public class ItemRepositoryTest {
 
     @Test
     public void findByItemNmLessThanOrderByItemNmDescTest() {
-        createItemList();
+        saveItemList();
         itemRepo.findByItemNmLessThanOrderByItemNmDesc("05")
                 .forEach(System.out::println);
 
@@ -132,21 +163,21 @@ public class ItemRepositoryTest {
 
     @Test
     public void findByItemNmLessThanTest(){
-        createItemList();
+        saveItemList();
         itemRepo.findByItemNmLessThan("03")
                 .forEach(System.out::println);
     }
 
     @Test
     public void findByItemNmOrItemDetailTest() {
-        createItemList();
+        saveItemList();
         itemRepo.findByItemNmOrItemDetail("aaa","hello5")
                 .forEach(System.out::println);
     }
 
     @Test
     public void findByItemNmTest(){
-        createItemList();
+        saveItemList();
         itemRepo.findByItemNm("05")
                 .forEach(System.out::println);
 
@@ -163,8 +194,6 @@ public class ItemRepositoryTest {
                 .stockNumber(1)
                 .itemDetail("dddd")
                 .itemSellStatus(ItemSellStatus.SELL)
-                .regTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
                 .build();
 
         System.out.println("=============== item : " + item);

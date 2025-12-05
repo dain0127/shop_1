@@ -22,15 +22,29 @@ public class QOrder extends EntityPathBase<Order> {
 
     public static final QOrder order = new QOrder("order1");
 
+    public final com.changin.shop.common.entity.QBaseEntity _super = new com.changin.shop.common.entity.QBaseEntity(this);
+
+    //inherited
+    public final StringPath createdBy = _super.createdBy;
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final QMember member;
+
+    //inherited
+    public final StringPath modifiedBy = _super.modifiedBy;
 
     public final DateTimePath<java.time.LocalDateTime> orderDate = createDateTime("orderDate", java.time.LocalDateTime.class);
 
     public final ListPath<OrderItem, QOrderItem> orderItems = this.<OrderItem, QOrderItem>createList("orderItems", OrderItem.class, QOrderItem.class, PathInits.DIRECT2);
 
     public final EnumPath<com.changin.shop.constant.OrderStatus> orderStatus = createEnum("orderStatus", com.changin.shop.constant.OrderStatus.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
 
     public QOrder(String variable) {
         this(Order.class, forVariable(variable), INITS);

@@ -66,6 +66,9 @@ dependencies {
 
     // input validation
     implementation("org.springframework.boot:spring-boot-starter-validation:3.5.7")
+
+    // modelmapper
+    implementation("org.modelmapper:modelmapper:3.2.1")
 }
 
 

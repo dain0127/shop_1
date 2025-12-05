@@ -11,61 +11,62 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QOrderItem is a Querydsl query type for OrderItem
+ * QItemImg is a Querydsl query type for ItemImg
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QOrderItem extends EntityPathBase<OrderItem> {
+public class QItemImg extends EntityPathBase<ItemImg> {
 
-    private static final long serialVersionUID = -9392211L;
+    private static final long serialVersionUID = 485298908L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QOrderItem orderItem = new QOrderItem("orderItem");
+    public static final QItemImg itemImg = new QItemImg("itemImg");
 
     public final com.changin.shop.common.entity.QBaseEntity _super = new com.changin.shop.common.entity.QBaseEntity(this);
-
-    public final NumberPath<Integer> count = createNumber("count", Integer.class);
 
     //inherited
     public final StringPath createdBy = _super.createdBy;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final StringPath imgName = createString("imgName");
+
+    public final StringPath imgUrl = createString("imgUrl");
+
     public final QItem item;
 
     //inherited
     public final StringPath modifiedBy = _super.modifiedBy;
 
-    public final QOrder order;
-
-    public final NumberPath<Integer> orderPrice = createNumber("orderPrice", Integer.class);
+    public final StringPath oriImgName = createString("oriImgName");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
 
+    public final StringPath repImgYn = createString("repImgYn");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
 
-    public QOrderItem(String variable) {
-        this(OrderItem.class, forVariable(variable), INITS);
+    public QItemImg(String variable) {
+        this(ItemImg.class, forVariable(variable), INITS);
     }
 
-    public QOrderItem(Path<? extends OrderItem> path) {
+    public QItemImg(Path<? extends ItemImg> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QOrderItem(PathMetadata metadata) {
+    public QItemImg(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QOrderItem(PathMetadata metadata, PathInits inits) {
-        this(OrderItem.class, metadata, inits);
+    public QItemImg(PathMetadata metadata, PathInits inits) {
+        this(ItemImg.class, metadata, inits);
     }
 
-    public QOrderItem(Class<? extends OrderItem> type, PathMetadata metadata, PathInits inits) {
+    public QItemImg(Class<? extends ItemImg> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.item = inits.isInitialized("item") ? new QItem(forProperty("item")) : null;
-        this.order = inits.isInitialized("order") ? new QOrder(forProperty("order"), inits.get("order")) : null;
     }
 
 }

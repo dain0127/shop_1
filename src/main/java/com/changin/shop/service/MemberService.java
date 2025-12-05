@@ -31,7 +31,6 @@ public class MemberService implements UserDetailsService {
     }
 
     public Member saveMember(Member member) throws IllegalStateException {
-
         validateDuplicationMember(member);
         return memberRepo.save(member);
 

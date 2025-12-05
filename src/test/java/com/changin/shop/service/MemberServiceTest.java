@@ -21,6 +21,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,6 +62,8 @@ class MemberServiceTest {
     @DisplayName("관리자 로그인 성공 테스트")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void adminLoginTest() throws Exception {
+
+
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
                 .andDo(print()) //콘솔 창에 띄우기
                 .andExpect(status().isNotFound()); //해당 url을 아직 만들지 않았음.

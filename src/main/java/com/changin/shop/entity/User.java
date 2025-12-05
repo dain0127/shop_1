@@ -1,6 +1,7 @@
 package com.changin.shop.entity;
 
 
+import com.changin.shop.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,11 +9,11 @@ import lombok.*;
 @Table(name="Person")
 @Setter
 @Getter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,17 @@
 package com.changin.shop.entity;
 
+import com.changin.shop.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-public class CartItem {
+@Setter
+@Getter
+@ToString(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CartItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

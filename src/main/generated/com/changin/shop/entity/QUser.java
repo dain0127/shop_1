@@ -19,11 +19,25 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final com.changin.shop.common.entity.QBaseEntity _super = new com.changin.shop.common.entity.QBaseEntity(this);
+
     public final NumberPath<Integer> age = createNumber("age", Integer.class);
+
+    //inherited
+    public final StringPath createdBy = _super.createdBy;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    //inherited
+    public final StringPath modifiedBy = _super.modifiedBy;
+
     public final StringPath name = createString("name");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));

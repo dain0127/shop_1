@@ -1,5 +1,7 @@
 package com.changin.shop.entity;
 
+import com.changin.shop.common.entity.BaseEntity;
+import com.changin.shop.common.entity.BaseTimeEntity;
 import com.changin.shop.constant.Role;
 import com.changin.shop.dto.MemberFormDto;
 import jakarta.persistence.*;
@@ -11,11 +13,11 @@ import static com.changin.shop.entity.QMember.member;
 @Entity
 @Setter
 @Getter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

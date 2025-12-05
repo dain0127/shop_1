@@ -2,7 +2,6 @@ package com.changin.shop.repository;
 
 
 import com.changin.shop.constant.ItemSellStatus;
-import com.changin.shop.dto.MemberFormDto;
 import com.changin.shop.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -41,8 +39,6 @@ public class OrderRepositoryTest {
                 .stockNumber(111)
                 .itemDetail("hello")
                 .itemSellStatus(ItemSellStatus.SELL)
-                .regTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
                 .build();
 
         return item;
@@ -104,5 +100,20 @@ public class OrderRepositoryTest {
 
 
     }
+
+//    @Test
+//    @DisplayName("지연 로딩 테스트")
+//    public void lazyLoadingTest(){
+//        //given
+//        Order order = new Order();
+//
+//        OrderItem orderItem = new OrderItem();
+//        orderItem.setOrder(order);
+//
+//        order.getOrderItems().add(orderItem);
+//
+//        orderRepository.saveAndFlush(order);
+//        em.clear();
+//    }
 
 }
