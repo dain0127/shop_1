@@ -62,11 +62,9 @@ class MemberServiceTest {
     @DisplayName("관리자 로그인 성공 테스트")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void adminLoginTest() throws Exception {
-
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/item/new"))
                 .andDo(print()) //콘솔 창에 띄우기
-                .andExpect(status().isNotFound()); //해당 url을 아직 만들지 않았음.
+                .andExpect(status().isOk()); //해당 url을 아직 만들지 않았음.
 
     }
 

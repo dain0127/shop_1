@@ -24,7 +24,7 @@ public class SecurityConfig {
                         .failureUrl("/member/login/error") //로그인 실패시
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .permitAll() //?
+                        .permitAll()
                 );
 
         http.logout(logout ->
