@@ -48,6 +48,14 @@ spring:
       name: test@test.com
       password: 1111
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+itemImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/item_img_save
+uploadPath : file:///C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/
+
 
 ####################################
 # 로그 정보 설정
