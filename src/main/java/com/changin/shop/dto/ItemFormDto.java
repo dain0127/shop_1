@@ -43,7 +43,7 @@ public class ItemFormDto {
 
 
     @Autowired
-    private static ModelMapper mapper;
+    private static ModelMapper mapper = new ModelMapper();
 
     public static ItemFormDto entityToDto(Item item) {
         return mapper.map(item, ItemFormDto.class);

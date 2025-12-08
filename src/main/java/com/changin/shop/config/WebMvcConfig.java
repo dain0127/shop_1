@@ -16,7 +16,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        //사용자가 이미지 파일을 조회할 때, (url) /images/** 에 매핑시킨다.
+        //이미지 파일을 조회할 때, (url) /images/** 에 매핑시킨다.
         registry.addResourceHandler("/images/**")
                 //위 url이 매핑되었을 때, 실제 파일을 읽어올 위치.
                 .addResourceLocations(uploadPath);
