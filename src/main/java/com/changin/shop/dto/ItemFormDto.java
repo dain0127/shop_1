@@ -39,7 +39,7 @@ public class ItemFormDto {
 
 
     private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
-    private List<Long> itemImgId = new ArrayList<>();
+    private List<Long> itemImgIds = new ArrayList<>();
 
 
     @Autowired

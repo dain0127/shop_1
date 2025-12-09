@@ -5,10 +5,14 @@ import com.changin.shop.common.entity.BaseEntity;
 import com.changin.shop.common.entity.BaseTimeEntity;
 import com.changin.shop.constant.ItemSellStatus;
 
+import com.changin.shop.dto.ItemFormDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.ui.Model;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,4 +45,10 @@ public class Item extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //아이템 판매 상태
+
+    public void updateItem(ItemFormDto itemFormDto){
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(itemFormDto, this);
+    }
+
 }

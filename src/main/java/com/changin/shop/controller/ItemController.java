@@ -1,21 +1,18 @@
 package com.changin.shop.controller;
 
 
-import com.changin.shop.dto.ItemDto;
 import com.changin.shop.dto.ItemFormDto;
 import com.changin.shop.entity.Item;
 import com.changin.shop.repository.ItemRepository;
 import com.changin.shop.service.ItemService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +24,48 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    //아이템 수정 폼 (세부사항 보여주기)
+    @GetMapping("/admin/item/{item_id}") // /admin/item/1
+    public String itemDetail(Model model
+            , @PathVariable("item_id") Long itemId){
+        try{
+            ItemFormDto itemFormDto = itemService.getItemDetail(itemId);
+            model.addAttribute("itemFormDto", itemFormDto);
+            return "item/itemForm";
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "등록된 상품이 없습니다.");
+            return "item/itemForm";
+        }
+    }
+
+
+    //미완성
+    @PostMapping("/admin/item/{item_id}")
+    public String itemUpdate(Model model
+            , @PathVariable("item_id") Long itemId
+            , @Valid @ModelAttribute ItemFormDto itemFormDto
+            , BindingResult bindingResult
+            , @RequestParam("itemImgFile") List<MultipartFile> listImgFile){
+
+        if(bindingResult.hasErrors()){
+            return "item/itemForm";
+        }
+
+        try {
+            itemService.updateItem(itemFormDto, listImgFile);
+        } catch (IOException e) {
+            model.addAttribute("errorMessage"
+                    , "상품 등록 중 오류가 발생했습니다.");
+            return "item/itemForm";
+        }
+
+        return  "redirect:/";
+    }
+
+
+
+
     //상품 등록 페이지 전송
     @GetMapping("/admin/item/new")
     public String itemNewForm(Model model) {
@@ -36,7 +75,7 @@ public class ItemController {
 
     //상품 등록
     @PostMapping("/admin/item/new")
-    public String itemNew(@Valid ItemFormDto itemFormDto,
+    public String itemNew(@Valid @ModelAttribute ItemFormDto itemFormDto,
                           BindingResult bindingResult,
           @RequestParam("itemImgFile") List<MultipartFile> listImgFile,
                           Model model) {

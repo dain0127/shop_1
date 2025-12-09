@@ -1,6 +1,5 @@
 package com.changin.shop.controller;
 
-import com.changin.shop.dto.ItemDto;
 import com.changin.shop.dto.ParamDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -39,6 +38,7 @@ public class ThymeleafController {
         return "thymeleaf/ex2";
     }
 
+    /*
     @GetMapping("/ex1")
     public String ex1(Model model) {
         ItemDto itemDto = ItemDto.builder()
@@ -53,4 +53,6 @@ public class ThymeleafController {
 
         return "thymeleaf/ex1";
     }
+
+     */
 }

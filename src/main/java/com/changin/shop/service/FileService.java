@@ -2,7 +2,6 @@ package com.changin.shop.service;
 
 
 import com.changin.shop.entity.ItemImg;
-import com.changin.shop.repository.ItemImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

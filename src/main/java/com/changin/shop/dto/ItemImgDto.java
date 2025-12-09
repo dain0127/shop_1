@@ -21,10 +21,9 @@ public class ItemImgDto {
     private String imgUrl; //이미지 저장 경로
     private String repImgYn; //대표 이미지 여부
 
-    @Autowired
-    static private ModelMapper modelMapper;
 
     public static ItemImgDto entityToDto(ItemImg itemImg){
+        ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(itemImg, ItemImgDto.class);
     }
 }

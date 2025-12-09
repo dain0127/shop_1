@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/*
 @Getter
 @Setter
 @ToString
@@ -33,3 +34,4 @@ public class ItemDto {
 
     private LocalDateTime updateTime; // 상품 수정 날짜
 }
+*/
