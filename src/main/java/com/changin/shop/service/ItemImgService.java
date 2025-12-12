@@ -14,7 +14,9 @@ import org.thymeleaf.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,11 @@ public class ItemImgService {
 
     private final FileService fileService;
     private final ItemImgRepository itemImgRepository;
+
+    // WebMvcConfig 클래스를 참조하라.
+    // /images/**는 url로 설정되어있고,
+    // /item_img_save/ 는 로컬 파일 시슽메의 경로로서 설정되어있음에 주목하라.
+    private final String ItemimgUrl = "/images/item_img_save/";
     
     
     //이미지 수정 서비스
@@ -43,7 +50,9 @@ public class ItemImgService {
                 ItemImg itemImg = itemImgRepository.findById(itemImgId)
                         .orElseThrow(EntityNotFoundException::new);
                 if(!StringUtils.isEmpty(itemImg.getImgName()))
-                    deleteItemImg(itemImgLocation + "/" + itemImg.getImgName());
+                    fileService.deleteFile(itemImgLocation + "/"
+                            + itemImg.getImgName());
+
 
                 imgName = fileService.uploadFile(itemImgLocation
                         , originalFileName, itemImgFile.getBytes());
@@ -51,10 +60,8 @@ public class ItemImgService {
 
                 //DB에 있는 데이터 수정
                 //dirty checking (jpa. DB 자동 수정)
-                imgUrl = "/images/item_img_save/" + imgName;
-                itemImgRepository.findById(itemImgId)
-                        .orElseThrow(EntityNotFoundException::new)
-                        .updateItemImg(originalFileName, imgName, imgUrl);
+                imgUrl = ItemimgUrl + imgName;
+                itemImg.updateItemImg(originalFileName,imgName,imgUrl);
             }
         }
     }
@@ -70,7 +77,7 @@ public class ItemImgService {
             //이미지 파일을 로컬 환경에 저장
             imgName = fileService.uploadFile(itemImgLocation
                     , originalFileName, itemImgFile.getBytes());
-            imgUrl = "/images/item_img_save/" + imgName;
+            imgUrl = ItemimgUrl + imgName;
 
             //경로 DB에 저장하기.
             itemImg.updateItemImg(originalFileName
@@ -81,11 +88,11 @@ public class ItemImgService {
     }
 
     //파일 삭제.
-    public void deleteItemImg(String imgUrl){
-        fileService.deleteFile(imgUrl);
+    public void deleteItemImg(String fileName){
+        fileService.deleteFile(itemImgLocation + "/" + fileName);
 
         //DB에서 해당 파일 경로 삭제.
-        ItemImg itemImg = itemImgRepository.findByImgUrl(imgUrl)
+        ItemImg itemImg = itemImgRepository.findByImgUrl(ItemimgUrl + fileName)
                 .orElseThrow(NoSuchElementException::new);
         itemImgRepository.delete(itemImg);
     }

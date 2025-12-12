@@ -1,14 +1,23 @@
 package com.changin.shop.controller;
 
 
+import com.changin.shop.dto.ItemAdminDto;
 import com.changin.shop.dto.ItemFormDto;
+import com.changin.shop.dto.ItemSearchDto;
 import com.changin.shop.entity.Item;
+import com.changin.shop.entity.ItemImg;
+import com.changin.shop.repository.ItemImgRepository;
 import com.changin.shop.repository.ItemRepository;
+import com.changin.shop.service.ItemImgService;
 import com.changin.shop.service.ItemService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,13 +25,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
+    private final ItemImgService itemImgService;
 
     //아이템 수정 폼 (세부사항 보여주기)
     @GetMapping("/admin/item/{item_id}") // /admin/item/1
@@ -40,7 +52,7 @@ public class ItemController {
     }
 
 
-    //미완성
+    //아이템 수정
     @PostMapping("/admin/item/{item_id}")
     public String itemUpdate(Model model
             , @PathVariable("item_id") Long itemId
@@ -56,14 +68,12 @@ public class ItemController {
             itemService.updateItem(itemFormDto, listImgFile);
         } catch (IOException e) {
             model.addAttribute("errorMessage"
-                    , "상품 등록 중 오류가 발생했습니다.");
+                    , "상품 수정 중 오류가 발생했습니다.");
             return "item/itemForm";
         }
 
         return  "redirect:/";
     }
-
-
 
 
     //상품 등록 페이지 전송
@@ -72,6 +82,7 @@ public class ItemController {
         model.addAttribute("itemFormDto", new ItemFormDto());
         return "item/itemForm";
     }
+
 
     //상품 등록
     @PostMapping("/admin/item/new")
@@ -104,18 +115,17 @@ public class ItemController {
     }
 
 
+    //상품 리스트 페이지 전송
+    @GetMapping({"/admin/items", "/admin/items/{page}"})
+    public String itemManagementForm(ItemSearchDto itemSearchDto, Model model, @PathVariable(value = "page") Optional<Integer> page){
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get(): 0, 5);
+        Page<ItemAdminDto> items = itemService.getAdminItemPage(itemSearchDto, pageable);
 
-    //상품 관리 페이지 전송
-    @GetMapping("/admin/items")
-    public String itemManagementForm(){
+        model.addAttribute("items", items);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("maxPage", 5);
+
+
         return "item/itemList";
     }
-
-
-    //상품 관리
-    @PostMapping("/admin/items")
-    public String itemManagement(){
-        return "";
-    }
-
 }

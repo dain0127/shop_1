@@ -26,4 +26,9 @@ public class ItemImgDto {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(itemImg, ItemImgDto.class);
     }
+
+    public ItemImg toEntity(){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(this, ItemImg.class);
+    }
 }

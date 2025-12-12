@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemImgRepository extends JpaRepository<ItemImg, Long> {
+    Optional<ItemImg> findById(Long itemImgid);
     Optional<ItemImg> findByImgUrl(String imgUrl);
+
     List<ItemImg> findByItemIdOrderByIdAsc(Long itemId);
 }

@@ -1,7 +1,9 @@
 package com.changin.shop.service;
 
+import com.changin.shop.dto.ItemAdminDto;
 import com.changin.shop.dto.ItemFormDto;
 import com.changin.shop.dto.ItemImgDto;
+import com.changin.shop.dto.ItemSearchDto;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.ItemImg;
 import com.changin.shop.repository.ItemImgRepository;
@@ -10,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,7 +60,7 @@ public class ItemService {
     public Long updateItem(ItemFormDto itemFormDto,
                          List<MultipartFile> itemImgFileList) throws EntityNotFoundException, IOException {
         //1) 상품 수정
-        Item item = itemRepository.findById(itemFormDto.getId())
+         Item item = itemRepository.findById(itemFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
 
         //변경 감지(dirty checking)
@@ -64,9 +68,23 @@ public class ItemService {
 
         //2) 이미지 수정
         List<Long> itemImgIdList = itemFormDto.getItemImgIds();
+        List<ItemImg> itemImgList = itemFormDto.getItemImgDtoList()
+                                    .stream()
+                                    .map(ItemImgDto::toEntity)
+                                    .toList();
 
         for (int i = 0; i < itemImgIdList.size(); i++) {
-            itemImgService.updateItemImg(itemImgIdList.get(i), itemImgFileList.get(i));
+            if(itemImgIdList.get(i) != null)
+                itemImgService.updateItemImg(itemImgIdList.get(i), itemImgFileList.get(i));
+            else {
+                ItemImg itemImg = new ItemImg();
+                itemImg.setItem(item);
+                if(i == 0)
+                    itemImg.setRepImgYn("Y");
+                else
+                    itemImg.setRepImgYn("N");
+                itemImgService.saveItemImg(itemImg , itemImgFileList.get(i));
+            }
         }
 
         return item.getId();
@@ -95,4 +113,15 @@ public class ItemService {
         return item.getId();
     }
 
+    //가장 최신 아이템 찾기.
+    public Long findLatestItemId() {
+        return itemRepository.findTopByOrderByIdDesc()
+                .orElseThrow(EntityNotFoundException::new)
+                .getId();
+    }
+
+    //해당 어드민이 가져올 수 있는 page 찾기
+    public Page<ItemAdminDto> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        return itemRepository.getAdminItemPage(itemSearchDto, pageable);
+    }
 }

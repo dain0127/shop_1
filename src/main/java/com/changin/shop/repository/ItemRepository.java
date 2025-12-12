@@ -1,6 +1,9 @@
 package com.changin.shop.repository;
 
+import com.changin.shop.dto.ItemSearchDto;
 import com.changin.shop.entity.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -9,7 +12,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item> {
+public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item>,
+        ItemRepositoryCustom  {
     List<Item> findByItemNm(String itemNm);
     List<Item> findByItemNmOrItemDetail(String itemNm, String itemDetail);
     List<Item> findByItemNmLessThan(String itemNm);
@@ -20,4 +24,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredi
 
     @Query(value = "select * from Item i where i.item_detail like %:itemDetail% order by i.price desc", nativeQuery = true)
     List<Item> findByNativeDetail(@Param("itemDetail") String itemDetail);
+
+    Optional<Item> findTopByOrderByIdDesc();
+
 }
