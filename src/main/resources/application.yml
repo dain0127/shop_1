@@ -1,5 +1,6 @@
 server:
-  port:8080
+  port: 8080
+  address: 0.0.0.0 # <--- 외부에서 접속가능
 
 spring:
   application:
@@ -26,7 +27,7 @@ spring:
 
   ####################################
   # JPA Setting
-  ####################################
+  ###0#################################
   jpa:
     open-in-view: true      #
     hibernate:
@@ -55,6 +56,8 @@ spring:
 
 itemImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/item_img_save
 uploadPath : file:///C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/
+
+mainBannerImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/image_sample/banner
 
 
 ####################################

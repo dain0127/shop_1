@@ -1,20 +1,17 @@
 package com.changin.shop.service;
 
-import com.changin.shop.dto.ItemAdminDto;
-import com.changin.shop.dto.ItemFormDto;
-import com.changin.shop.dto.ItemImgDto;
-import com.changin.shop.dto.ItemSearchDto;
+import com.changin.shop.dto.*;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.ItemImg;
 import com.changin.shop.repository.ItemImgRepository;
 import com.changin.shop.repository.ItemRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -121,7 +118,15 @@ public class ItemService {
     }
 
     //해당 어드민이 가져올 수 있는 page 찾기
+    @Transactional(readOnly = true)
     public Page<ItemAdminDto> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getAdminItemPage(itemSearchDto, pageable);
+    }
+
+
+    //main page에 필요한 데이터 넘기기
+    @Transactional(readOnly = true)
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
+        return itemRepository.getMainItemPage(itemSearchDto, pageable);
     }
 }

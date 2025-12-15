@@ -21,6 +21,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 //위 url이 매핑되었을 때, 실제 파일을 읽어올 위치.
                 .addResourceLocations(uploadPath);
 
+
+        registry.addResourceHandler("/**")
+                .addResourceLocations(uploadPath);
+
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 }

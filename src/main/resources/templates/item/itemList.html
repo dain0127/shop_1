@@ -40,8 +40,8 @@
 
 <div layout:fragment="content">
 
-    <form th:action="@{'/admin/items/' + ${items.number}}" role="form" method="get" th:object="${items}">
-        <table class="table">
+    <form th:action="@{/admin/items/{page}(page=${items.number})}" method="get" th:object="${itemSearchDto}">
+    <table class="table">
             <thead>
             <tr>
                 <td>상품아이디</td>
@@ -63,7 +63,7 @@
                 <td th:text="${item.createdBy}"></td>
                 <td th:text="${item.regTime}"></td>
                 <!-- <상품 이미지 추가>-->
-                <td> <img th:src="${item.imgUrl}" alt="상품 이미지" style="max-width:100px;"/> <td>
+                <td> <img th:src="${item.imgUrl}" alt="상품 이미지" style="max-width:100px;"/> </td>
             </tr>
             </tbody>
         </table>

@@ -3,8 +3,11 @@ package com.changin.shop.repository;
 import com.changin.shop.constant.ItemSellStatus;
 import com.changin.shop.dto.ItemAdminDto;
 import com.changin.shop.dto.ItemSearchDto;
+import com.changin.shop.dto.MainItemDto;
+import com.changin.shop.dto.QMainItemDto;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.QItem;
+import com.changin.shop.entity.QItemImg;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -25,6 +28,7 @@ import java.util.List;
 
 import static com.changin.shop.entity.QItem.item;
 import static com.changin.shop.entity.QItemImg.itemImg;
+
 
 @Slf4j
 public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
@@ -57,7 +61,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return item.regTime.after(startLocalDateTime);
     }
 
-
     //판매 상태 필터
     private BooleanExpression searchSellStatusEq(ItemSellStatus searchSellStatus) {
         return searchSellStatus == null ? null : item.itemSellStatus.eq(searchSellStatus);
@@ -78,15 +81,14 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         }
     }
 
-
     @Override
     public Page<ItemAdminDto> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
 
         try {
-            BooleanExpression bx = searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery());
-            String str;
-            if(bx!=null)
-                str = bx.toString();
+//            BooleanExpression bx = searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery());
+//            String str;
+//            if(bx!=null)
+//                str = bx.toString();
 
             //list 반환
             List<ItemAdminDto> content = queryFactory
@@ -124,5 +126,38 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             List<ItemAdminDto> errorList = new ArrayList<>();
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
+    }
+
+    @Override
+    public Page<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        List<MainItemDto> content = null;
+        try {
+            content = queryFactory
+                    .select(
+                            new QMainItemDto(
+                                    QItem.item.id,
+                                    QItem.item.itemNm,
+                                    QItem.item.itemDetail,
+                                    QItemImg.itemImg.imgUrl,
+                                    QItem.item.price
+                            )
+                    )
+                    .from(QItemImg.itemImg)
+                    .innerJoin(QItemImg.itemImg.item, QItem.item)
+                    .where(searchByLike("itemNm", itemSearchDto.getSearchQuery()))
+                    .where(QItemImg.itemImg.repImgYn.eq("Y"))
+                    .orderBy(QItem.item.id.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
+            return new PageImpl<MainItemDto>(content, pageable, content.size());
+        } catch (NoSuchFieldException e) {
+            log.info("=========================" + e.getMessage());
+            List<ItemAdminDto> errorList = new ArrayList<>();
+            return new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+
+
     }
 }
