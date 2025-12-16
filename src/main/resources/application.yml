@@ -1,6 +1,5 @@
 server:
   port: 8080
-  address: 0.0.0.0 # <--- 외부에서 접속가능
 
 spring:
   application:
@@ -14,6 +13,7 @@ spring:
 
   thymeleaf:
     cache: false              # 캐쉬 없음
+
 
 
   ####################################
@@ -54,6 +54,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 100MB
 
+
+####################################
+# 사용자 경로
+####################################
 itemImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/item_img_save
 uploadPath : file:///C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/
 

@@ -36,9 +36,25 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemImgService itemImgService;
 
-    //아이템 수정 폼 (세부사항 보여주기)
-    @GetMapping("/admin/item/{item_id}") // /admin/item/1
+    //상세 페이지
+    @GetMapping("/item/{item_id}")
     public String itemDetail(Model model
+            ,@PathVariable("item_id") Long itemId){
+        try{
+            ItemFormDto itemFormDto = itemService.getItemDetail(itemId);
+            model.addAttribute("item", itemFormDto);
+            return "item/itemDetail";
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "등록된 상품이 없습니다.");
+            return "/";
+        }
+    }
+
+
+    //아이템 수정 폼 (세부사항 자동 전송)
+    @GetMapping("/admin/item/{item_id}") // /admin/item/1
+    public String itemUpdate(Model model
             , @PathVariable("item_id") Long itemId){
         try{
             ItemFormDto itemFormDto = itemService.getItemDetail(itemId);

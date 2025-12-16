@@ -31,10 +31,21 @@
                         <a class="nav-link active" aria-current="page" href="/member/new">사용자 등록 페이지</a>
                     </li>
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+
+
+                <form class="d-flex" role="search" action="/" method="get">
+                    <input
+                            class="form-control me-2"
+                            type="search"
+                            name="searchQuery"
+                            placeholder="Search"
+                            aria-label="Search"
+                            th:value="${itemSearchDto?.searchQuery}"
+                    >
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
+
+
             </div>
         </div>
     </nav>

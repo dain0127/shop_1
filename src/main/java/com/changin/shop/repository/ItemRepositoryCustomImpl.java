@@ -68,7 +68,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     //검색어 필터
     private BooleanExpression searchByLike(String searchBy, String searchQuery) throws NoSuchFieldException {
+
         if(StringUtils.equals("itemNm", searchBy)){
+            if(searchQuery == null || searchQuery.equals("null"))
+                return null;
             return item.itemNm.like("%"+searchQuery +"%");
         }else if(StringUtils.equals("createdBy", searchBy)) {
             return item.createdBy.like("%"+ searchQuery+"%");
@@ -134,7 +137,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         try {
             content = queryFactory
                     .select(
-                            new QMainItemDto(
+                            Projections.constructor(
+                                    MainItemDto.class,
                                     QItem.item.id,
                                     QItem.item.itemNm,
                                     QItem.item.itemDetail,
@@ -142,16 +146,26 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                                     QItem.item.price
                             )
                     )
-                    .from(QItemImg.itemImg)
-                    .innerJoin(QItemImg.itemImg.item, QItem.item)
-                    .where(searchByLike("itemNm", itemSearchDto.getSearchQuery()))
-                    .where(QItemImg.itemImg.repImgYn.eq("Y"))
+                    .from(item)
+                    .leftJoin(itemImg)
+                    .on(itemImg.item.eq(item).and(itemImg.repImgYn.eq("Y")))
+                    .where(searchRegDateAfter(itemSearchDto.getSearchDateType()),
+                            searchSellStatusEq(itemSearchDto.getSearchSellStatus()),
+                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery()))
                     .orderBy(QItem.item.id.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
 
-            return new PageImpl<MainItemDto>(content, pageable, content.size());
+            //전체 개수 조회
+            Long total = queryFactory.select(Wildcard.count)
+                    .from(item)
+                    .where(searchRegDateAfter(itemSearchDto.getSearchDateType()),
+                            searchSellStatusEq(itemSearchDto.getSearchSellStatus()),
+                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery()))
+                    .fetchOne(); //단건 반환 (전체 그룹 집계함수)
+
+            return new PageImpl<MainItemDto>(content, pageable, total);
         } catch (NoSuchFieldException e) {
             log.info("=========================" + e.getMessage());
             List<ItemAdminDto> errorList = new ArrayList<>();
