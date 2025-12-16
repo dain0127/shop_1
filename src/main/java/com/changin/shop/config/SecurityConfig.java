@@ -24,6 +24,18 @@ public class SecurityConfig {
     @Autowired
     private MemberService memberService;
 
+    // ✅ 403 Forbidden 및 정적 리소스 문제를 해결하는 가장 확실한 방법입니다.
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/css/**",
+                "/js/**",
+                "/img/**",
+                "/images/**",
+                "/favicon.ico"
+        );
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // 기본 로그인 사용하기
@@ -42,8 +54,8 @@ public class SecurityConfig {
 
         // 각 페이지에 대한 접근 권한 설정
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
-                .requestMatchers("/", "/member/**", "/item/**", "/images/**").permitAll()
+//                .requestMatchers("/css/**", "/js/**", "/img/**, "/images/**","/image_sample/**"").permitAll()
+                .requestMatchers("/", "/member/**", "/item/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 

@@ -42,8 +42,7 @@ public class HomeController {
         model.addAttribute("maxPage", MAX_PAGE_COUNT);
 
 
-        model.addAttribute("mainBannerImgUrl", "/"
-                + "image_sample/banner/banner.jpg");
+        model.addAttribute("mainBannerImgUrl", "/img/banner.jpg");
 
         return "main";
     }
