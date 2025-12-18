@@ -41,6 +41,7 @@ public class Order extends BaseEntity {
     @OneToMany(fetch =  FetchType.LAZY, mappedBy = "order"
             , cascade = CascadeType.ALL
             , orphanRemoval = true)
+    @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
