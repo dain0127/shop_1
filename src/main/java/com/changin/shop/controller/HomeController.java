@@ -30,6 +30,7 @@ public class HomeController {
 
     final int MAX_PAGE_COUNT = 5;
     final int PAGE_SIZE = 6;
+    final String mainBannerImgUrl = "/img/banner.jpg";
 
     @GetMapping("/")
     public String home(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model){
@@ -44,7 +45,7 @@ public class HomeController {
         model.addAttribute("maxPage", MAX_PAGE_COUNT);
 
 
-        model.addAttribute("mainBannerImgUrl", "/img/banner.jpg");
+        model.addAttribute("mainBannerImgUrl", mainBannerImgUrl);
 
         return "main";
     }

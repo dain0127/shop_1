@@ -39,19 +39,43 @@ public class ItemController {
     private final ItemImgService itemImgService;
 
 
-    //상세 페이지
-    @GetMapping("/item/{item_id}")
-    public String itemDetail(Model model
-            ,@PathVariable("item_id") Long itemId){
-        try{
-            ItemFormDto itemFormDto = itemService.getItemDetail(itemId);
-            model.addAttribute("item", itemFormDto);
-            return "item/itemDetail";
-        }catch (EntityNotFoundException e){
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "등록된 상품이 없습니다.");
-            return "/";
+    //상품 등록 페이지 전송
+    @GetMapping("/admin/item/new")
+    public String itemNewForm(Model model) {
+        //dummy를 보내, html 페이지에서 해당 dto의 field에 접근 할 수 있도록 한다.
+        model.addAttribute("itemFormDto", new ItemFormDto());
+        return "item/itemForm";
+    }
+
+
+    //상품 등록
+    @PostMapping("/admin/item/new")
+    public String itemNew(@Valid @ModelAttribute ItemFormDto itemFormDto,
+                          BindingResult bindingResult,
+                          @RequestParam("itemImgFile") List<MultipartFile> listImgFile,
+                          Model model) {
+
+        //만약 Valid하지 않으면, 제자리로.
+        if (bindingResult.hasErrors()) {
+            return "item/itemForm";
         }
+
+        //이미지 파일을 아무것도 올리지 않았다면 + 등록시라면(hidden으로 넘어온 id값이 없음.), 제자리로.
+        if(listImgFile.getFirst().isEmpty() && itemFormDto.getId() == null){
+            model.addAttribute("errorMessage"
+                    , "하나 이상의 이미지 파일을 등록해야합니다.");
+            return "item/itemForm";
+        }
+
+        try {
+            itemService.saveItem(itemFormDto, listImgFile);
+        } catch (IOException e) {
+            model.addAttribute("errorMessage"
+                    , "상품 등록 중 오류가 발생했습니다.");
+            return "item/itemForm";
+        }
+
+        return "redirect:/";
     }
 
 
@@ -95,42 +119,20 @@ public class ItemController {
     }
 
 
-    //상품 등록 페이지 전송
-    @GetMapping("/admin/item/new")
-    public String itemNewForm(Model model) {
-        model.addAttribute("itemFormDto", new ItemFormDto());
-        return "item/itemForm";
-    }
 
-
-    //상품 등록
-    @PostMapping("/admin/item/new")
-    public String itemNew(@Valid @ModelAttribute ItemFormDto itemFormDto,
-                          BindingResult bindingResult,
-          @RequestParam("itemImgFile") List<MultipartFile> listImgFile,
-                          Model model) {
-
-        //만약 Valid하지 않으면, 제자리로.
-        if (bindingResult.hasErrors()) {
-            return "item/itemForm";
+    //상세 페이지
+    @GetMapping("/item/{item_id}")
+    public String itemDetail(Model model
+            ,@PathVariable("item_id") Long itemId){
+        try{
+            ItemFormDto itemFormDto = itemService.getItemDetail(itemId);
+            model.addAttribute("item", itemFormDto);
+            return "item/itemDetail";
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "등록된 상품이 없습니다.");
+            return "/";
         }
-
-        //이미지 파일을 아무것도 올리지 않았다면 + 등록시라면, 제자리로.
-        if(listImgFile.getFirst().isEmpty() && itemFormDto.getId() == null){
-            model.addAttribute("errorMessage"
-                    , "하나 이상의 이미지 파일을 등록해야합니다.");
-            return "item/itemForm";
-        }
-
-        try {
-            itemService.saveItem(itemFormDto, listImgFile);
-        } catch (IOException e) {
-            model.addAttribute("errorMessage"
-                    , "상품 등록 중 오류가 발생했습니다.");
-            return "item/itemForm";
-        }
-
-        return "redirect:/";
     }
 
 

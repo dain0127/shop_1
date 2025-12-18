@@ -28,9 +28,11 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    //주문하기
     @PostMapping("/order")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid OrderDto orderDto,
                       BindingResult bindingResult, Principal principal) {
+
         if(bindingResult.hasErrors()){
             StringBuilder sb = new StringBuilder();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -44,6 +46,8 @@ public class OrderController {
         String email = principal.getName();
         Long orderId;
 
+
+        //task
         try{
             orderId = orderService.order(orderDto, email);
         }catch (Exception e){

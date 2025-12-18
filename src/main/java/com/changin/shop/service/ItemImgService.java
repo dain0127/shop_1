@@ -34,8 +34,28 @@ public class ItemImgService {
     // /images/**는 url로 설정되어있고,
     // /item_img_save/ 는 로컬 파일 시슽메의 경로로서 설정되어있음에 주목하라.
     private final String ItemimgUrl = "/images/item_img_save/";
-    
-    
+
+    //이미지 저장 서비스
+    //이미지 데이터와, 이름, 저장경로대로. 파일 시스템에 파일을 저장, DB에 url 저장.
+    public void saveItemImg(ItemImg itemImg, MultipartFile itemImgFile) throws IOException{
+        String originalFileName = itemImgFile.getOriginalFilename();
+        String imgName;
+        String imgUrl;
+
+        if(!StringUtils.isEmpty(originalFileName)) {
+            //이미지 파일을 로컬 환경에 저장
+            imgName = fileService.uploadFile(itemImgLocation
+                    , originalFileName, itemImgFile.getBytes());
+            imgUrl = ItemimgUrl + imgName;
+
+            //경로 DB에 저장하기.
+            itemImg.updateItemImg(originalFileName
+                    , imgName, imgUrl);
+            itemImgRepository.save(itemImg);
+        }
+
+    }
+
     //이미지 수정 서비스
     public void updateItemImg(Long itemImgId, MultipartFile itemImgFile) throws IOException{
 
@@ -64,27 +84,6 @@ public class ItemImgService {
                 itemImg.updateItemImg(originalFileName,imgName,imgUrl);
             }
         }
-    }
-    
-    //이미지 저장 서비스
-    //이미지 데이터와, 이름, 저장경로대로. 파일 시스템에 파일을 저장, DB에 url 저장.
-    public void saveItemImg(ItemImg itemImg, MultipartFile itemImgFile) throws IOException{
-        String originalFileName = itemImgFile.getOriginalFilename();
-        String imgName;
-        String imgUrl;
-
-        if(!StringUtils.isEmpty(originalFileName)) {
-            //이미지 파일을 로컬 환경에 저장
-            imgName = fileService.uploadFile(itemImgLocation
-                    , originalFileName, itemImgFile.getBytes());
-            imgUrl = ItemimgUrl + imgName;
-
-            //경로 DB에 저장하기.
-            itemImg.updateItemImg(originalFileName
-                    , imgName, imgUrl);
-            itemImgRepository.save(itemImg);
-        }
-
     }
 
     //파일 삭제.

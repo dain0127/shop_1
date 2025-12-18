@@ -23,8 +23,7 @@ public class MemberService implements UserDetailsService {
 
     @Autowired
     final private MemberRepository memberRepo;
-
-    public void validateDuplicationMember(Member member) throws IllegalStateException {
+    private void validateDuplicationMember(Member member) throws IllegalStateException {
         if(memberRepo.findByEmail(member.getEmail()).isPresent()){
             throw new IllegalStateException("중복된 이메일입니다.");
         }
@@ -33,12 +32,10 @@ public class MemberService implements UserDetailsService {
     public Member saveMember(Member member) throws IllegalStateException {
         validateDuplicationMember(member);
         return memberRepo.save(member);
-
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         Member member = memberRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + " : 해당 사용자가 없습니다."));
 
