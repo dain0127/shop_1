@@ -6,6 +6,7 @@ import com.changin.shop.common.entity.BaseTimeEntity;
 import com.changin.shop.constant.ItemSellStatus;
 
 import com.changin.shop.dto.ItemFormDto;
+import com.changin.shop.exception.OutOfStockException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.modelmapper.ModelMapper;
@@ -31,12 +32,9 @@ public class Item extends BaseEntity {
     @Column(name = "item_id")
     private Long id;
 
-
     @Column(nullable = false, length = 50)
     private String itemNm; //상품 이름
-
     private int price; //가격
-
     private int stockNumber; //재고 수량
 
     @Lob
@@ -51,4 +49,10 @@ public class Item extends BaseEntity {
         mapper.map(itemFormDto, this);
     }
 
+    public void removeStock(int stockNumber){
+        if(this.stockNumber - stockNumber < 0)
+            throw new OutOfStockException("남아있는 재고가 부족합니다. (남은 재고) : " + this.stockNumber);
+        else
+            this.stockNumber -= stockNumber;
+    }
 }

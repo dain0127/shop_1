@@ -10,10 +10,12 @@ import com.changin.shop.repository.ItemImgRepository;
 import com.changin.shop.repository.ItemRepository;
 import com.changin.shop.service.ItemImgService;
 import com.changin.shop.service.ItemService;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,7 @@ public class ItemController {
 
     private final ItemService itemService;
     private final ItemImgService itemImgService;
+
 
     //상세 페이지
     @GetMapping("/item/{item_id}")

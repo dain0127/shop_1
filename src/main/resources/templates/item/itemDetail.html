@@ -148,8 +148,8 @@
         <div class="wd50">
             <!-- 탬플릿 내에서 변수 정의 기존의 T(kr.inhatc.shop.constant.ItemSellStatus).SELL 형태를 불가!! -->
             <!--/*@thymesVar id="SELL" type="kr.inhatc.shop.constant.ItemSellStatus"*/-->
-            <span th:if="${item.itemSellStatus != SELL}" class="badge badge-primary mgb-15">판매중</span>
-            <span th:unless="${item.itemSellStatus != SELL}" class="badge btn-danger mgb-15">품절</span>
+            <span th:if="${item.itemSellStatus.name() == 'SELL'}" class="badge badge-primary mgb-15">판매중</span>
+            <span th:unless="${item.itemSellStatus.name() == 'SELL'}" class="badge btn-danger mgb-15">품절</span>
 
             <div class="h4" th:text="${item.itemNm}"></div>
 
@@ -175,11 +175,12 @@
                 <h3 name="totalPrice" id="totalPrice" class="font-weight-bold"></h3>
             </div>
 
-            <div th:if="${item.itemSellStatus != SELL}" class="text-right">
+            <!-- enum type에 대해서 string으로 바꿔주기 위해서는 name메소드 사용 -->
+            <div th:if="${item.itemSellStatus.name() == 'SELL'}" class="text-right">
                 <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">장바구니 담기</button>
                 <button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>
             </div>
-            <div th:unless="${item.itemSellStatus != SELL}" class="text-right">
+            <div th:unless="${item.itemSellStatus.name() == 'SELL'}" class="text-right">
                 <button type="button" class="btn btn-danger btn-lg">품절</button>
             </div>
         </div>

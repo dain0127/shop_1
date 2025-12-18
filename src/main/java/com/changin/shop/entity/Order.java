@@ -37,9 +37,41 @@ public class Order extends BaseEntity {
 
     //외래키로 참조하고 있는 쪽이 JPA에서는 주인.
     //이쪽은 주인이 아님.
+    @Builder.Default
     @OneToMany(fetch =  FetchType.LAZY, mappedBy = "order"
             , cascade = CascadeType.ALL
             , orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+
+    public static Order createOrder(Member member, List<OrderItem> orderItems){
+        Order newOrder = Order.builder()
+                .member(member)
+                .orderDate(LocalDateTime.now())
+                .orderStatus(OrderStatus.ORDER)
+                .build();
+
+
+        newOrder.orderItems.addAll(orderItems);
+        orderItems.forEach(orderItem -> {
+            orderItem.setOrder(newOrder);
+        });
+
+        return newOrder;
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public int getTotalPrice(){
+        int totalPrice = 0;
+        
+        for(OrderItem orderItem : this.orderItems){
+            totalPrice += orderItem.getTotalPrice();       
+        }
+        
+        return totalPrice;
+    }
 }

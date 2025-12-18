@@ -1,6 +1,7 @@
 package com.changin.shop.controller;
 
 
+import com.changin.shop.constant.ItemSellStatus;
 import com.changin.shop.dto.ItemSearchDto;
 import com.changin.shop.dto.MainItemDto;
 import com.changin.shop.service.ItemService;
@@ -35,6 +36,7 @@ public class HomeController {
         Pageable pageable = PageRequest.of(page.orElse(0), PAGE_SIZE);
 
         itemSearchDto.setSearchBy("itemNm");
+        itemSearchDto.setSearchSellStatus(ItemSellStatus.SELL);
         Page<MainItemDto> items = itemService.getMainItemPage(itemSearchDto, pageable);
 
         model.addAttribute("items", items);

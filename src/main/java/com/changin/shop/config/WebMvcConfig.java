@@ -34,8 +34,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // /static/ 등 클래스패스 리소스를 명시적으로 추가하여 CSS/JS/HTML 등을 찾게 합니다.
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/", "classpath:/public/", "classpath:/resources/");
-
-
-        // 4. (선택적) WebMvcConfigurer.super.addResourceHandlers(registry);는 사실상 필요 없으므로 제거해도 무방합니다.
     }
 }
