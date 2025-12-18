@@ -69,6 +69,10 @@ dependencies {
 
     // modelmapper
     implementation("org.modelmapper:modelmapper:3.2.1")
+
+
+    // env 파일 연결
+    implementation("io.github.cdimascio:dotenv-java:3.2.0")
 }
 
 
