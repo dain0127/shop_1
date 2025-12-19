@@ -1,0 +1,82 @@
+test:
+  message: "YML LOADED"
+
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: shop
+
+  devtools:
+    livereload:
+      enabled: true           # 자동 리로드 설정
+    restart:
+      enabled: true           # 자동 재실행 설정
+
+  thymeleaf:
+    cache: false              # 캐쉬 없음
+
+
+
+  ####################################
+  # MySql Setting
+  ####################################
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shop?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+    username: dain0127
+    password: 1234
+
+  ####################################
+  # JPA Setting
+  ###0#################################
+  jpa:
+    open-in-view: true      #
+    hibernate:
+      ddl-auto: update      # create, update, none, create-drop, validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true          # SQL ?? ???
+    properties:
+      hibernate:
+        format_sql: true    # ?? ???? ???
+  #  database-platform: org.hibernate.dialect.MySQL8Dialect  # MySQL8 ?? ??
+
+
+  ####################################
+  # Security User
+  ####################################
+  security:
+    user:
+      name: test@test.com
+      password: 1111
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+
+####################################
+# 사용자 경로
+####################################
+itemImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/item_img_save
+uploadPath : file:///C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/
+
+mainBannerImgLocation: C:/Users/dain0/Desktop/developer/web/WEB_3_java_shop/image_sample/banner
+
+
+####################################
+# 로그 정보 설정
+####################################
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace  # 물음표에 바인드 파라미터 출력
+
+

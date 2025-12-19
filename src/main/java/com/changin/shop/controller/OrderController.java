@@ -73,8 +73,18 @@ public class OrderController {
         return "order/orderHist";
     }
 
+
+    //사용자가 "/order/{orderId}/cancel"에 post 방식으로 request를 전송할 때,
+    //1. 해당 사용자의 정말로 해당 페이지의 orderId의 주인과 같은지 검증한다
+    //2. order를 삭제한다.
     @PostMapping("/order/{orderId}/cancel")
-    public String orderCancel(@PathVariable("orderId") Long orderId){
-        return "/";
+    public ResponseEntity orderCancel(@PathVariable("orderId") Long orderId, Principal principal){
+
+        if(!orderService.vaildateOrder(orderId, principal.getName())){
+            return new ResponseEntity<String>("사용자가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        orderService.cancelOrder(orderId);
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 }

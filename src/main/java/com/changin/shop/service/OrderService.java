@@ -1,5 +1,6 @@
 package com.changin.shop.service;
 
+import com.changin.shop.constant.OrderStatus;
 import com.changin.shop.dto.OrderDto;
 import com.changin.shop.dto.OrderHistDto;
 import com.changin.shop.dto.OrderItemDto;
@@ -7,14 +8,13 @@ import com.changin.shop.entity.Item;
 import com.changin.shop.entity.Member;
 import com.changin.shop.entity.Order;
 import com.changin.shop.entity.OrderItem;
-import com.changin.shop.repository.ItemImgRepository;
-import com.changin.shop.repository.ItemRepository;
-import com.changin.shop.repository.MemberRepository;
-import com.changin.shop.repository.OrderRepository;
+import com.changin.shop.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
-    private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final ItemRepository itemRepository;
     private final ItemImgRepository itemImgRepository;
 
 
@@ -88,5 +90,33 @@ public class OrderService {
         item.removeStock(orderDto.getCount().intValue());
 
         return order.getId();
+    }
+
+
+    public boolean vaildateOrder(Long orderId, String name) {
+        List<Order> orderList = orderRepository.findOrders(name, PageRequest.of(0,1));
+
+        log.info("==============>" + orderList.getFirst().toString());
+        if(orderList.isEmpty() || !orderList.getFirst().getId().equals(orderId)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public void cancelOrder(Long orderId) {
+        //given
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        List<OrderItem> orderItemList = order.getOrderItems();
+
+        //process
+        //stock update
+        for(OrderItem orderItem : orderItemList){
+            orderItem.getItem().addStock(orderItem.getCount()); //dirty checking.
+        }
+        //order cancel.
+        order.setOrderStatus(OrderStatus.CANCEL);
     }
 }

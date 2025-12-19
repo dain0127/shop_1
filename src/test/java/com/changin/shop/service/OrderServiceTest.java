@@ -1,6 +1,7 @@
 package com.changin.shop.service;
 
 import com.changin.shop.constant.ItemSellStatus;
+import com.changin.shop.constant.OrderStatus;
 import com.changin.shop.dto.OrderDto;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.Member;
@@ -8,20 +9,18 @@ import com.changin.shop.entity.Order;
 import com.changin.shop.repository.ItemRepository;
 import com.changin.shop.repository.MemberRepository;
 import com.changin.shop.repository.OrderRepository;
-import groovy.transform.builder.Builder;
-import groovy.util.logging.Slf4j;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
-@Slf4j
-@Builder
 public class OrderServiceTest {
 
     @Autowired
@@ -44,7 +43,6 @@ public class OrderServiceTest {
 
         return itemRepository.save(item);
     }
-
     private Member saveMember(){
         Member member = Member.builder()
                 .email("test@test")
@@ -75,5 +73,32 @@ public class OrderServiceTest {
         int totalPrice = order.getTotalPrice();
 
         Assertions.assertEquals(totalPrice, item.getPrice()*100L);
+    }
+
+    @Test
+    @DisplayName("주문 취소 테스트")
+    public void 주문취소테스트(){
+        //given
+        Item item = saveItem();
+        Member member = saveMember();
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCount(10L);
+        orderDto.setItemId(item.getId());
+
+        Long orderId = orderService.order(orderDto, member.getEmail());
+
+        //when
+        orderService.cancelOrder(orderId);
+        Order newOrder = orderRepository.findById(orderId)
+                .orElseThrow(EntityNotFoundException::new);;
+        Item newItem = itemRepository.findById(item.getId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        //then
+        //test restoring stockNumber
+        Assertions.assertEquals(item.getStockNumber(), newItem.getStockNumber());
+        //test OderStatus transfer to 'CANCEL'
+        Assertions.assertEquals(OrderStatus.CANCEL, newOrder.getOrderStatus());
     }
 }

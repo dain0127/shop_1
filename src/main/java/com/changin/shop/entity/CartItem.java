@@ -18,12 +18,25 @@ public class CartItem extends BaseEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cart_id")
+    @JoinColumn(name="cart_id", nullable = false)
     Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="item_id")
+    @JoinColumn(name="item_id", nullable = false)
     Item item;
 
     int count;
+
+    public static CartItem createCartItem(Cart cart, Item item, int count){
+        CartItem newCartItem = new CartItem();
+        newCartItem.setCart(cart);
+        newCartItem.setItem(item);
+        newCartItem.setCount(count);
+
+        return newCartItem;
+    }
+
+    public void addCount(int addCount){
+        this.count+=addCount;
+    }
 }

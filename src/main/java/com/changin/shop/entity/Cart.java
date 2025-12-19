@@ -22,4 +22,10 @@ public class Cart extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Cart createCart(Member member){
+        Cart newCart = new Cart();
+        newCart.setMember(member);
+        return newCart;
+    }
 }

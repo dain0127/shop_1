@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 @SpringBootApplication
 public class ShopApplication {
 
-	public static void main(String[] args) {
+    static{
         Dotenv dotenv = Dotenv.load();
         //Property에 읽어온 env 환경 변수 값 등록.
         dotenv.entries().forEach(e ->
@@ -21,7 +21,9 @@ public class ShopApplication {
 
         System.out.println("============> DB_USERNAME: " + username);
         System.out.println("============> DB_PASSWORD: " + password);
+    }
 
+	public static void main(String[] args) {
         SpringApplication.run(ShopApplication.class, args);
 	}
 
