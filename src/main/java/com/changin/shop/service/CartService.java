@@ -1,6 +1,7 @@
 package com.changin.shop.service;
 
 
+import com.changin.shop.dto.CartDetailDto;
 import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.entity.Cart;
 import com.changin.shop.entity.CartItem;
@@ -14,6 +15,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,22 +38,43 @@ public class CartService {
         int count = cartItemDto.getCount();
 
         //member에 카트가 없으면, cart 생성.
-        Cart cart;
-        if((cart = cartRepository.findByMemberId(member.getId())) == null){
+        Cart cart = cartRepository.findByMemberId(member.getId());
+        if(cart == null){
             cart = Cart.createCart(member);
             cartRepository.save(cart);
         }
 
         //cartItem에 item,cart,count 정보 삽입 후 저장.
-        //cartItem이 이미 존재하면, 수량 합하기.
-        CartItem cartItem = cartItemRepositroy.findByCartId(cart.getId());
-        if(cartItem == null){
-            cartItem = CartItem.createCartItem(cart, item, count);
-        }else{
-            cartItem.addCount(count);
+        //cartItem에 같은 item이 이미 존재하면, 수량 합하기.
+        List<CartItem> cartItemList = cartItemRepositroy.findByCartId(cart.getId());
+        Boolean isDuplcated = false;
+        CartItem newCartItem = null;
+
+        for (CartItem targetCartItem : cartItemList){
+            if(targetCartItem.getId().equals(item.getId())){
+                newCartItem = targetCartItem;
+                isDuplcated = true;
+                break;
+            }
         }
 
-        return cartItemRepositroy.save(cartItem).getId();
+
+        if(isDuplcated){
+            newCartItem.addCount(count);
+        }else{
+            newCartItem = CartItem.createCartItem(cart, item, count);
+        }
+
+        return cartItemRepositroy.save(newCartItem).getId();
     }
 
+    public Cart findCartByName(String name) {
+        Member member = memberRepository.findByEmail(name)
+                .orElseThrow(EntityNotFoundException::new);
+        return cartRepository.findCartByMember(member);
+    }
+
+    public List<CartDetailDto> findCartDetailByCart(Cart cart) {
+        return cartRepository.findCartDetailDtoListByCartId(cart.getId());
+    }
 }

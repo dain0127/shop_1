@@ -12,6 +12,6 @@ import java.util.List;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem,Long>, CartItemRepositoryCustom{
-    public CartItem findByCartId(Long cartId);
+    public List<CartItem> findByCartId(Long cartId);
     public CartItem findByItemId(Long itemId);
 }

@@ -11,5 +11,5 @@ import java.util.List;
 
 public interface CartItemRepositoryCustom {
 
-    public List<CartDetailDto> findCartDetailDtoList(Long cartId, String email);
+    public List<CartDetailDto> findCartDetailDtoListByCartId(Long cartId);
 }

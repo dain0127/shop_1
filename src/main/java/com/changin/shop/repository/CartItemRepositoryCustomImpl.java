@@ -42,8 +42,7 @@ public class CartItemRepositoryCustomImpl implements CartItemRepositoryCustom {
     }
 
     @Override
-    public List<CartDetailDto> findCartDetailDtoList(Long cartId,
-                                                     String email){
+    public List<CartDetailDto> findCartDetailDtoListByCartId(Long cartId){
          List<CartDetailDto> content;
          content = queryFactory
                  .select(Projections.constructor(
@@ -57,10 +56,8 @@ public class CartItemRepositoryCustomImpl implements CartItemRepositoryCustom {
                  .from(cartItem)
                  .join(cartItem.item, item)
                  .join(itemImg).on(itemImg.item.eq(item))
-                 .join(cartItem.cart, cart)
-                 .join(cart.member, member)
-                 .where(member.email.eq(email)
-                        , itemImg.repImgYn.eq("Y"))
+                 .join(cartItem.cart, cart).on(cart.id.eq(cartId))
+                 .where(itemImg.repImgYn.eq("Y"))
                  .orderBy(cartItem.updateTime.desc())
                  .fetch();
 

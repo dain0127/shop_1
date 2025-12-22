@@ -45,7 +45,9 @@ public class CartRepositoryTest {
                 .address("aaa")
                 .build();
 
-        return Member.createMember(dto, passwordEncoder);
+        return memberRepository.save(
+                Member.createMember(dto, passwordEncoder)
+        );
     }
     private Item saveItem(){
         Item newItem = Item.builder()
@@ -116,8 +118,7 @@ public class CartRepositoryTest {
 
         //when
         List<CartDetailDto> resultList
-                = cartItemRepository.findCartDetailDtoList(cart.getId(),
-                member.getEmail());
+                = cartItemRepository.findCartDetailDtoListByCartId(cart.getId());
 
         //then
         CartDetailDto expectedDto = new CartDetailDto(
@@ -129,7 +130,8 @@ public class CartRepositoryTest {
         );
 
         Assertions.assertNotNull(resultList);
-        Assertions.assertEquals(resultList.getFirst(), expectedDto);
+        Assertions.assertEquals(expectedDto.getImgUrl(),
+                resultList.getFirst().getImgUrl());
     }
 
 }

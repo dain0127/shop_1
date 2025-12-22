@@ -1,12 +1,15 @@
 package com.changin.shop.controller;
 
+import com.changin.shop.dto.CartDetailDto;
 import com.changin.shop.dto.CartItemDto;
+import com.changin.shop.entity.Cart;
 import com.changin.shop.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,8 @@ public class CartContoller {
 
     private final CartService cartService;
 
+
+    //카트 추가하기
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order
             (@RequestBody @Valid CartItemDto cartItemDto,
@@ -50,5 +55,16 @@ public class CartContoller {
         }
 
         return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
+    }
+
+    //카트 리스트
+    @GetMapping(value = "/cart")
+    public String orderHist(Principal principal, Model model){
+        String name = principal.getName();
+        Cart cart = cartService.findCartByName(name);
+        List<CartDetailDto> content = cartService.findCartDetailByCart(cart);
+        model.addAttribute("cartItems", content);
+
+        return "cart/cartList";
     }
 }
