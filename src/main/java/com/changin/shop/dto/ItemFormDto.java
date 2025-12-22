@@ -38,7 +38,9 @@ public class ItemFormDto {
     private ItemSellStatus itemSellStatus; //아이템 판매 상태
 
 
+    @Builder.Default
     private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
+    @Builder.Default
     private List<Long> itemImgIds = new ArrayList<>();
 
 
