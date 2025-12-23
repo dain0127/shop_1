@@ -4,6 +4,7 @@ package com.changin.shop.controller;
 import com.changin.shop.dto.OrderDto;
 import com.changin.shop.dto.OrderHistDto;
 import com.changin.shop.service.OrderService;
+import groovy.util.logging.Slf4j;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -22,8 +23,10 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+@lombok.extern.slf4j.Slf4j
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
@@ -46,8 +49,8 @@ public class OrderController {
         String email = principal.getName();
         Long orderId;
 
+        log.info("==========================> " + email);
 
-        //task
         try{
             orderId = orderService.order(orderDto, email);
         }catch (Exception e){

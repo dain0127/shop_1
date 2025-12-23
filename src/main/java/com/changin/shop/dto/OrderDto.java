@@ -10,6 +10,7 @@ import lombok.*;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderDto {
 
     @NotNull(message = "상품 아이디는 필수 입력값입니다.")

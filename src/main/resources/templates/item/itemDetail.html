@@ -91,8 +91,9 @@
                 dataType : "json",
                 cache   : false,
                 success  : function(result, status){
-                    alert("상품을 장바구니에 담았습니다.");
-                    location.href='/';
+                    if(confirm("바로 이동하시겠습니까?")){
+                        location.href='/cart';
+                    }
                 },
                 error : function(jqXHR, status, error){
                     if(jqXHR.status == '401'){
@@ -106,7 +107,6 @@
                 }
             });
         }
-
     </script>
 </th:block>
 

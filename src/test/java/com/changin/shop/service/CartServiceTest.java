@@ -129,4 +129,35 @@ public class CartServiceTest {
                     resultList.get(i).getItemNm());
         }
     }
+
+
+    @Test
+    @DisplayName("카트 아이템 삭제 테스트")
+    public void 카트아이템삭제(){
+        //given
+        int cartSize = 5;
+
+        Member member = saveMember();
+        Cart cart = saveCart(member);
+        List<CartItem> cartItemList = new ArrayList<>();
+        for (int i = 0; i < cartSize; i++) {
+            Item tempItem = saveItem(i+"");
+            CartItem tempCartItem = saveCartItem(cart, tempItem);
+
+            cartItemList.add(tempCartItem);
+        }
+
+        //when
+        cartService.deleteCartItem(cartItemList.getFirst().getId());
+        cartSize-=1;
+
+        //then
+        Cart newCart = cartRepository.findCartByMember(member);
+        List<CartItem> newCartItemList = cartItemRepositroy.findByCartId(newCart.getId());
+        Assertions.assertEquals(cartSize ,newCartItemList.size());
+
+        for(CartItem cartItem : newCartItemList){
+            System.out.println(cartItem);
+        }
+    }
 }

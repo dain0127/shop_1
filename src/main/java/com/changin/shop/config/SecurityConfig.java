@@ -32,6 +32,7 @@ public class SecurityConfig {
                 "/js/**",
                 "/img/**",
                 "/images/**",
+                //"/item/**",
                 "/favicon.ico"
         );
     }

@@ -82,11 +82,15 @@
         }
 
         function deleteCartItem(obj){
+            console.log(obj);
+            console.log(obj.dataset.id);
+
             var cartItemId = obj.dataset.id;
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 
             var url = "/cartItem/" + cartItemId;
+
 
             $.ajax({
                 url      : url,
@@ -122,14 +126,20 @@
             var dataList = new Array();
             var paramData = new Object();
 
+            var lastCartItemId = null;
+
             $("input[name=cartChkBox]:checked").each(function() {
                 var cartItemId = $(this).val();
+                lastCartItemId = cartItemId;
+
                 var data = new Object();
                 data["cartItemId"] = cartItemId;
                 dataList.push(data);
             });
 
-            paramData['cartOrderDtoList'] = dataList;
+            paramData.cartItemId = lastCartItemId;
+            paramData.cartOrderDtoList = dataList;
+
 
             var param = JSON.stringify(paramData);
 
@@ -235,8 +245,9 @@
                                 <input type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
                                        th:value="${cartItem.count}" min="1"
                                        onchange="changeCount(this)" class="form-control mr-2" >
-                                <button type="button" class="close" aria-label="Close">
-                                    <span aria-hidden="true" th:data-id="${cartItem.cartItemId}" onclick="deleteCartItem(this)">&times;</span>
+                                <button type="button" class="close" aria-label="Close"
+                                        th:data-id="${cartItem.cartItemId}" onclick="deleteCartItem(this)">
+                                    <span aria-hidden="true">&times;</span>
                                 </button>
                             </span>
                         </div>

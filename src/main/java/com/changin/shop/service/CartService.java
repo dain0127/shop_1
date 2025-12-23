@@ -3,10 +3,9 @@ package com.changin.shop.service;
 
 import com.changin.shop.dto.CartDetailDto;
 import com.changin.shop.dto.CartItemDto;
-import com.changin.shop.entity.Cart;
-import com.changin.shop.entity.CartItem;
-import com.changin.shop.entity.Item;
-import com.changin.shop.entity.Member;
+import com.changin.shop.dto.CartOrderDto;
+import com.changin.shop.dto.OrderDto;
+import com.changin.shop.entity.*;
 import com.changin.shop.repository.CartItemRepository;
 import com.changin.shop.repository.CartRepository;
 import com.changin.shop.repository.ItemRepository;
@@ -28,6 +27,7 @@ public class CartService {
     final private CartItemRepository cartItemRepositroy;
     final private ItemRepository itemRepository;
     final private MemberRepository memberRepository;
+    final private OrderService orderService;
 
     //반환값 : cartId
     public Long addCart(CartItemDto cartItemDto, String email){
@@ -76,5 +76,49 @@ public class CartService {
 
     public List<CartDetailDto> findCartDetailByCart(Cart cart) {
         return cartRepository.findCartDetailDtoListByCartId(cart.getId());
+    }
+
+    public void deleteCartItem(Long cartItemId) throws EntityNotFoundException {
+        CartItem cartItem = cartItemRepositroy.findById(cartItemId)
+                .orElseThrow(EntityNotFoundException::new);
+        cartItemRepositroy.delete(cartItem);
+    }
+
+    public boolean vaildateCart(String name, Long cartItemId) {
+        //cart of member
+        Member member = memberRepository.findByEmail(name)
+                .orElseThrow(EntityNotFoundException::new);
+        Cart memberCart = cartRepository.findCartByMember(member);
+
+        //cart of cartItem
+        CartItem cartItem = cartItemRepositroy.findById(cartItemId)
+                .orElseThrow(EntityNotFoundException::new);
+        Cart cartItemCart = cartRepository.findById(cartItem.getCart().getId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        //return value by whether same or not
+        return memberCart.getId().equals(cartItemCart.getId()) ? true : false;
+    }
+
+    //선택한 여러개의 상품을 주문한다.
+    public Long orderCartItems(CartOrderDto cartOrderDto, String name) {
+        List<CartOrderDto> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
+        Long orderId = -1L;
+
+        //order cartItemWisely
+        for(CartOrderDto dto : cartOrderDtoList){
+            CartItem cartItem = cartItemRepositroy.findById(dto.getCartItemId())
+                    .orElseThrow(EntityNotFoundException::new);
+            Long itemId = itemRepository.findById(cartItem.getItem().getId())
+                            .orElseThrow(EntityNotFoundException::new).getId();
+
+            int count = cartItem.getCount();
+            orderId = orderService.order(new OrderDto(itemId, (long) count), name);
+
+            //delete cartItemList from cart
+            cartItemRepositroy.delete(cartItem);
+        }
+
+        return cartOrderDtoList.isEmpty() ? -1L : orderId;
     }
 }
