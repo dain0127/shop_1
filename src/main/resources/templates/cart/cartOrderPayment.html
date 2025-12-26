@@ -14,23 +14,30 @@
     <script th:inline="javascript">
 
         $(document).ready(function(){
-            $("input[name=cartChkBox]").change( function(){
-                getOrderTotalPrice();
-                calculateOrderTotalPrice();
-            });
+            getOrderTotalPrice();
         });
 
-        function calculateOrderTotalPrice() {
-            let orderTotalPrice = 0;
+        function getOrderTotalPrice() {
+            console.log("getOrderTotalPrice is called by js")
 
-            // name="totalPrice" 인 모든 span 순회
-            $("span[name='totalPrice']").each(function () {
-                let priceText = $(this).text();   // 예: "30000원"
-                let price = parseInt(priceText.replace("원", ""));
-                orderTotalPrice += price;
+            var orderTotalPrice = 0;
+
+            $("tr[data-cart-item-id]").each(function () {
+                var cartItemId = $(this).data("cart-item-id");
+
+                var price = Number($("#price_" + cartItemId).data("price"));
+                var count = Number($("#count_" + cartItemId).data("count"));
+
+                console.log("price : " + price);
+                console.log("count : " + count);
+
+                if (!isNaN(price) && !isNaN(count)) {
+                    orderTotalPrice += price * count;
+                }
             });
 
-            // 총 주문 금액 출력
+            console.log("orderTotalPrice : " + orderTotalPrice);
+
             $("#orderTotalPrice").text(orderTotalPrice.toLocaleString() + "원");
         }
 
@@ -46,13 +53,14 @@
 
             var lastCartItemId = null;
 
-            $("input[name=cartChkBox]:checked").each(function() {
-                var cartItemId = $(this).val();
+            $("tr[data-cart-item-id]").each(function() {
+                var cartItemId = $(this).data("cart-item-id");
                 lastCartItemId = cartItemId;
 
-                var data = new Object();
-                data["cartItemId"] = cartItemId;
-                dataList.push(data);
+                dataList.push({
+                    cartItemId: cartItemId,
+                    cartOrderDtoList: null
+                });
             });
 
             paramData.cartItemId = lastCartItemId;
@@ -67,13 +75,12 @@
                 contentType : "application/json",
                 data     : param,
                 beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    // 데이터를 전송하기 전에 헤더에 csrf값을 설정
                     xhr.setRequestHeader(header, token);
                 },
                 dataType : "json",
                 cache   : false,
                 success  : function(result, status){
-                    alert("주문이 완료 되었습니다.");
                     location.href='/orders';
                 },
                 error : function(jqXHR, status, error){
@@ -88,6 +95,7 @@
                 }
             });
         }
+        
 
     </script>
 
@@ -123,20 +131,23 @@
 <div layout:fragment="content" class="content-mg">
 
     <h2 class="mb-4">
-        주문 페이지
+        주문 목록
     </h2>
 
     <div>
 
         <table class="table">
             <colgroup>
+                <col width="30%"/>
                 <col width="15%"/>
-                <col width="70%"/>
                 <col width="15%"/>
             </colgroup>
             <thead>
+            <tr th:each="cartItem : ${cartItems}"
+                th:data-cart-item-id="${cartItem.cartItemId}">
             <tr class="text-center">
                 <td>상품정보</td>
+                <td>개수</td>
                 <td>상품금액</td>
             </tr>
             </thead>
@@ -154,13 +165,15 @@
                                       th:data-price="${cartItem.price}"
                                       th:text="${cartItem.price} + '원'" class="align-self-center mr-2">
                                 </span>
-                                <span name="count" th:id="'count_' + ${cartItem.cartItemId}"
-                                      th:value="${cartItem.count}">
-                                </span>
-                                </button>
                             </span>
                         </div>
                     </div>
+                </td>
+                <td>
+                    <span type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
+                          th:data-count="${cartItem.count}"
+                          th:text="${cartItem.count} + '개'"  class="align-self-center mr-2">
+                    </span>
                 </td>
                 <td class="text-center align-middle">
                     <span th:id="'totalPrice_' + ${cartItem.cartItemId}"

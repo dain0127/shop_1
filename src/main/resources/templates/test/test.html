@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        function test() {
+            // 1️⃣ form 생성
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/test";
+
+            // 2️⃣ CSRF 처리
+            var token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+            var csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "_csrf";
+            csrfInput.value = token;
+            form.appendChild(csrfInput);
+
+            // 3️⃣ 체크된 cartItemId 수집
+            //var checkedBoxes = document.querySelectorAll("input[name='cartChkBox']:checked");
+
+            //var lastCartItemId = null;
+
+            /* checkedBoxes.forEach(function (checkbox, index) {
+
+                var cartItemId = checkbox.value;
+                lastCartItemId = cartItemId;
+
+                // cartOrderDtoList[i].cartItemId
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "cartOrderDtoList[" + index + "].cartItemId";
+                input.value = cartItemId;
+
+                form.appendChild(input);
+            }); */
+
+            // 4️⃣ cartItemId (대표값)
+            /*
+            var mainIdInput = document.createElement("input");
+            mainIdInput.type = "hidden";
+            mainIdInput.name = "cartItemId";
+            mainIdInput.value = lastCartItemId;
+            form.appendChild(mainIdInput); 
+            */
+
+            
+            //test로 보낼 dto data
+            var testInputA = document.createElement("input")
+            testInputA.type = "hidden";
+            testInputA.name = "a";
+            testInputA.value = 1;
+            form.appendChild(testInputA)
+
+            var testInputB = document.createElement("input")
+            testInputA.type = "hidden";
+            testInputB.name = "b";
+            testInputB.value = 2;
+            form.appendChild(testInputB);
+            
+
+            // 5️⃣ form 전송
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .content-mg{
+            margin-left:25%;
+            margin-right:25%;
+            margin-top:2%;
+            margin-bottom:100px;
+        }
+        .repImgDiv{
+            margin-right:15px;
+            margin-left:15px;
+            height:auto;
+        }
+        .repImg{
+            height:100px;
+            width:100px;
+        }
+        .fs18{
+            font-size:18px
+        }
+        .fs24{
+            font-size:24px
+        }
+    </style>
+</th:block>
+    <div layout:fragment="content" class="content-mg">
+
+        <h2 class="mb-4">
+            테스트 페이지
+        </h2>
+
+        <div class="text-center mt-3">
+            <button type="button" class="btn btn-primary btn-lg" onclick="test()">Test</button>
+        </div>
+
+    </div>
+</div>
+
+</html>

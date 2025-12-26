@@ -5,6 +5,7 @@ import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
 import com.changin.shop.entity.Cart;
 import com.changin.shop.service.CartService;
+import groovy.util.logging.Slf4j;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -99,22 +101,24 @@ public class CartContoller {
         }
     }
 
-    @PostMapping(value = "/cart/check")
-    public @ResponseBody ResponseEntity<?> cartCheck(){
-
-
-        return null;
-    }
-
 
     //장바구니 결제 페이지
-    @GetMapping(value = "/cart/orderPayment")
+    @PostMapping(value = "/cart/orderPayment")
     public String orderOrderPayment(Principal principal, Model model
-            , @RequestBody CartOrderDto cartOrderDto){
+            , @ModelAttribute CartOrderDto cartOrderDto
+            , RedirectAttributes redirectAttributes){
         String name = principal.getName();
         Cart cart = cartService.findCartByName(name);
         List<CartDetailDto> content = cartService.findCartDetailByCart(cart);
 
+
+        //체크된 cartItem 없이 넘어온 경우.
+        if(cartOrderDto.getCartOrderDtoList() == null){
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "체크 박스를 하나 이상 선택해야합니다."
+            );
+            return "redirect:/cart";
+        }
 
         //체크된 아이템만 결제 페이지에서 보이도록 해야한다.
         List<Long> checkedCartItemIdList = cartOrderDto.getCartOrderDtoList()
@@ -123,9 +127,9 @@ public class CartContoller {
 
 
         for (Long checkedCartItemId : checkedCartItemIdList) {
-            content = content.stream().filter(
-                    e -> e.getCartItemId().equals(checkedCartItemId)
-            ).toList();
+            content = content.stream().filter(e ->{
+                return checkedCartItemIdList.contains(e.getCartItemId());
+            }).toList();
         }
         content = new ArrayList<>(content);
 
@@ -150,6 +154,7 @@ public class CartContoller {
         }
 
         Long orderId = cartService.orderCartItems(cartOrderDto, principal.getName());
+
         if(orderId >= 0)
             return new ResponseEntity<Long>(orderId, HttpStatus.OK);
         else

@@ -19,16 +19,21 @@
             });
         });
 
-        function getOrderTotalPrice(){
+        function getOrderTotalPrice() {
             var orderTotalPrice = 0;
-            $("input[name=cartChkBox]:checked").each(function() {
+
+            $("input[name=cartChkBox]:checked").each(function () {
                 var cartItemId = $(this).val();
-                var price = $("#price_" + cartItemId).attr("data-price");
-                var count = $("#count_" + cartItemId).val();
-                orderTotalPrice += price*count;
+
+                var price = Number($("#price_" + cartItemId).data("price"));
+                var count = Number($("#count_" + cartItemId).val());
+
+                if (!isNaN(price) && !isNaN(count)) {
+                    orderTotalPrice += price * count;
+                }
             });
 
-            $("#orderTotalPrice").html(orderTotalPrice+'원');
+            $("#orderTotalPrice").text(orderTotalPrice.toLocaleString() + "원");
         }
 
         function changeCount(obj){
@@ -117,57 +122,58 @@
             });
         }
 
-        function orders(){
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
+        function toPaymentPage() {
 
-            var url = "/cart/check";
+            // 1️⃣ form 생성
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/cart/orderPayment";
 
-            var dataList = new Array();
-            var paramData = new Object();
+            // 2️⃣ CSRF 처리
+            var token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+            var csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "_csrf";
+            csrfInput.value = token;
+            form.appendChild(csrfInput);
+
+            // 3️⃣ 체크된 cartItemId 수집
+            var checkedBoxes = document.querySelectorAll("input[name='cartChkBox']:checked");
+
+            /*
+            if (checkedBoxes.length === 0) {
+                alert("주문할 상품을 선택해주세요.");
+                return; // ❗ 여기서 종료 (form 생성/전송 안 됨)
+            }
+            */
+
 
             var lastCartItemId = null;
 
-            $("input[name=cartChkBox]:checked").each(function() {
-                var cartItemId = $(this).val();
+            checkedBoxes.forEach(function (checkbox, index) {
+
+                var cartItemId = checkbox.value;
                 lastCartItemId = cartItemId;
 
-                var data = new Object();
-                data["cartItemId"] = cartItemId;
-                dataList.push(data);
+                // cartOrderDtoList[i].cartItemId
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "cartOrderDtoList[" + index + "].cartItemId";
+                input.value = cartItemId;
+
+                form.appendChild(input);
             });
 
-            paramData.cartItemId = lastCartItemId;
-            paramData.cartOrderDtoList = dataList;
+            // 4️⃣ cartItemId (대표값)
+            var mainIdInput = document.createElement("input");
+            mainIdInput.type = "hidden";
+            mainIdInput.name = "cartItemId";
+            mainIdInput.value = lastCartItemId;
+            form.appendChild(mainIdInput);
 
-
-            var param = JSON.stringify(paramData);
-
-            $.ajax({
-                url      : url,
-                type     : "POST",
-                contentType : "application/json",
-                data     : param,
-                beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
-                    location.href='/cart/orderPayment';
-                },
-                error : function(jqXHR, status, error){
-
-                    if(jqXHR.status == '401'){
-                        alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
-                        alert(jqXHR.responseJSON.message);
-                    }
-
-                }
-            });
+            // 5️⃣ form 전송
+            document.body.appendChild(form);
+            form.submit();
         }
 
     </script>
@@ -261,12 +267,16 @@
             </tbody>
         </table>
 
+        <div th:if="${errorMessage}" class="alert alert-danger text-center">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
         <h2 class="text-center">
             총 주문 금액 : <span id="orderTotalPrice" class="text-danger">0원</span>
         </h2>
 
         <div class="text-center mt-3">
-            <button type="button" class="btn btn-primary btn-lg" onclick="orders()">주문하기</button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="toPaymentPage()">주문하기</button>
         </div>
 
     </div>

@@ -22,8 +22,4 @@ public class HelloController {
         return userDto;
     }
 
-    @GetMapping(value = "/test")
-    public String test(){
-        return "order/order";
-    }
 }
