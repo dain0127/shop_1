@@ -32,7 +32,6 @@ public class SecurityConfig {
                 "/js/**",
                 "/img/**",
                 "/images/**",
-                //"/item/**",
                 "/favicon.ico"
         );
     }
@@ -57,8 +56,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
 //                .requestMatchers("/css/**", "/js/**", "/img/**, "/images/**","/image_sample/**"").permitAll()
                 .requestMatchers("/", "/member/**", "/item/**").permitAll()
+                .requestMatchers("/cart/**", "/order/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated());
+                .anyRequest().authenticated()
+        );
 
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
