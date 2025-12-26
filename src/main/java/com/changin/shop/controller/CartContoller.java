@@ -17,6 +17,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -56,6 +57,7 @@ public class CartContoller {
         return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
     }
 
+
     //카트 리스트
     @GetMapping(value = "/cart")
     public String orderHist(Principal principal, Model model){
@@ -65,6 +67,19 @@ public class CartContoller {
         model.addAttribute("cartItems", content);
 
         return "cart/cartList";
+    }
+
+    @PatchMapping(value = "/cartItem/{cartItemId}")
+    public @ResponseBody ResponseEntity updateCartItem(@PathVariable("cartItemId") Long cartItemId, int count, Principal principal){
+
+        if(count <= 0){
+            return new ResponseEntity<String>("최소 1개 이상 담아주세요", HttpStatus.BAD_REQUEST);
+        } else if(!cartService.vaildateCart(principal.getName(), cartItemId)){
+            return new ResponseEntity<String>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        cartService.updateCartItemCount(cartItemId, count);
+        return new ResponseEntity<Long>(cartItemId, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/cartItem/{cartItemId}")
@@ -84,6 +99,42 @@ public class CartContoller {
         }
     }
 
+    @PostMapping(value = "/cart/check")
+    public @ResponseBody ResponseEntity<?> cartCheck(){
+
+
+        return null;
+    }
+
+
+    //장바구니 결제 페이지
+    @GetMapping(value = "/cart/orderPayment")
+    public String orderOrderPayment(Principal principal, Model model
+            , @RequestBody CartOrderDto cartOrderDto){
+        String name = principal.getName();
+        Cart cart = cartService.findCartByName(name);
+        List<CartDetailDto> content = cartService.findCartDetailByCart(cart);
+
+
+        //체크된 아이템만 결제 페이지에서 보이도록 해야한다.
+        List<Long> checkedCartItemIdList = cartOrderDto.getCartOrderDtoList()
+                .stream().map(CartOrderDto::getCartItemId)
+                .toList();
+
+
+        for (Long checkedCartItemId : checkedCartItemIdList) {
+            content = content.stream().filter(
+                    e -> e.getCartItemId().equals(checkedCartItemId)
+            ).toList();
+        }
+        content = new ArrayList<>(content);
+
+        model.addAttribute("cartItems", content);
+
+        return "cart/cartOrderPayment";
+    }
+
+    //장바구니 주문하기
     @PostMapping(value = "/cart/orders")
     public @ResponseBody ResponseEntity<?> orderItems(
             @RequestBody CartOrderDto cartOrderDto

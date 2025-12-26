@@ -121,4 +121,10 @@ public class CartService {
 
         return cartOrderDtoList.isEmpty() ? -1L : orderId;
     }
+
+    public void updateCartItemCount(Long cartItemId, int count) {
+        CartItem cartItem = cartItemRepositroy.findById(cartItemId)
+                .orElseThrow(EntityNotFoundException::new);
+        cartItem.setCount(count);
+    }
 }
