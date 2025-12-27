@@ -1,57 +1,129 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">-->
+<!--<div th:fragment="header1">-->
+<!--    <nav class="navbar navbar-expand-lg bg-body-tertiary">-->
+<!--        <div class="container-fluid">-->
+<!--            <a class="navbar-brand" href="/">Changin's Shop</a>-->
+<!--            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--                <span class="navbar-toggler-icon"></span>-->
+<!--            </button>-->
+<!--            <div class="collapse navbar-collapse" id="navbarSupportedContent">-->
+<!--                <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+<!--                    <li class="nav-item" sec:authorize="isAuthenticated()">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/cart">장바구니</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="isAuthenticated()">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/orders">구매이력</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="isAnonymous()">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/member/login">로그인</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="isAuthenticated()">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/member/logout">로그아웃</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="isAnonymous()">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/member/new">사용자 등록 페이지</a>-->
+<!--                    </li>-->
+
+<!--                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/admin/item/new">상품등록</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/admin/items">상품관리</a>-->
+<!--                    </li>-->
+<!--                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">-->
+<!--                        <a class="nav-link active" aria-current="page" href="/admin/category/new">카테고리</a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+
+
+<!--                <form class="d-flex" role="search" action="/" method="get">-->
+<!--                    <input-->
+<!--                            class="form-control me-2"-->
+<!--                            type="search"-->
+<!--                            name="searchQuery"-->
+<!--                            placeholder="Search"-->
+<!--                            aria-label="Search"-->
+<!--                            th:value="${itemSearchDto?.searchQuery}"-->
+<!--                    >-->
+<!--                    <button class="btn btn-outline-success" type="submit">Search</button>-->
+<!--                </form>-->
+
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </nav>-->
+<!--</div>-->
+<!--</html>-->
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="www.thymeleaf.org">
 <div th:fragment="header1">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Changin's Shop</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link active" aria-current="page" href="/cart">장바구니</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link active" aria-current="page" href="/orders">구매이력</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a class="nav-link active" aria-current="page" href="/member/login">로그인</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link active" aria-current="page" href="/member/logout">로그아웃</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="isAnonymous()">
-                        <a class="nav-link active" aria-current="page" href="/member/new">사용자 등록 페이지</a>
-                    </li>
+    <nav class="navbar navbar-expand-lg bg-light border-bottom">
+        <div class="container-fluid d-flex">
 
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/admin/item/new">상품등록</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/admin/items">상품관리</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/admin/category/new">카테고리</a>
-                    </li>
-                </ul>
+            <!-- 1. 왼쪽: 메인 로고 (1, 2단 통합 크게 배치) -->
+            <a class="navbar-brand d-flex align-items-center fw-bold px-3" href="/" style="font-size: 2rem; min-height: 100px;">
+                Changin's Shop
+            </a>
 
+            <!-- 2. 오른쪽: 상단(부메뉴) + 하단(주메뉴) 영역 -->
+            <div class="flex-grow-1 d-flex flex-column">
 
-                <form class="d-flex" role="search" action="/" method="get">
-                    <input
-                            class="form-control me-2"
-                            type="search"
-                            name="searchQuery"
-                            placeholder="Search"
-                            aria-label="Search"
-                            th:value="${itemSearchDto?.searchQuery}"
-                    >
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+                <!-- [상단] 보조 메뉴 (오른쪽 정렬, 작게) -->
+                <div class="d-flex justify-content-end align-items-center py-2 border-bottom" style="font-size: 0.85rem;">
+                    <ul class="navbar-nav flex-row gap-3">
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link p-0 text-secondary" href="/member/login">로그인</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link p-0 text-secondary" href="/member/new">회원가입</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link p-0 text-secondary" href="/cart">장바구니</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link p-0 text-secondary" href="/orders">구매이력</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link p-0 text-secondary" href="/member/logout">로그아웃</a>
+                        </li>
+                    </ul>
+                </div>
 
+                <!-- [하단] 주메뉴 및 검색창 -->
+                <div class="navbar-collapse collapse d-flex justify-content-between align-items-center py-2" id="navbarSupportedContent">
+                    <ul class="navbar-nav fw-semibold" style="font-size: 1.1rem;">
+                        <li class="nav-item"><a class="nav-link px-3" href="#">카테고리1</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="#">카테고리2</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="#">카테고리3</a></li>
+                        <li class="nav-item"><a class="nav-link px-3" href="#">카테고리4</a></li>
 
+                        <!-- 관리자 메뉴 (강조색) -->
+                        <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                            <a class="nav-link px-3 text-primary" href="/admin/category/new">카테고리</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                            <a class="nav-link px-3 text-primary"  href="/admin/item/new">상품등록</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                            <a class="nav-link px-3 text-primary" href="/admin/items">상품관리</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                            <a class="nav-link px-3 text-primary" href="/orders">주문관리</a>
+                        </li>
+                    </ul>
+
+                    <!-- 검색창 (오른쪽 배치) -->
+                    <form class="d-flex" role="search" action="/" method="get">
+                        <input class="form-control form-control-sm me-2" type="search" name="searchQuery"
+                               placeholder="상품 검색" th:value="${itemSearchDto?.searchQuery}" style="width: 200px;">
+                        <button class="btn btn-outline-dark btn-sm" type="submit">Search</button>
+                    </form>
+                </div>
             </div>
+
         </div>
     </nav>
 </div>
 </html>
+

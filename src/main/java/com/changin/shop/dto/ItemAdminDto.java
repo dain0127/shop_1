@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemAdminDto {
+    private String categoryNm;
+
     private Long id;
     private String itemNm; //상품 이름
     private ItemSellStatus itemSellStatus; //아이템 판매 상태

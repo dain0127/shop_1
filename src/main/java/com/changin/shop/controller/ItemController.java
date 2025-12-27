@@ -15,6 +15,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ItemController {
@@ -150,6 +152,8 @@ public class ItemController {
     public String itemManagementForm(ItemSearchDto itemSearchDto, Model model, @PathVariable(value = "page") Optional<Integer> page){
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get(): 0, 5);
         Page<ItemAdminDto> items = itemService.getAdminItemPage(itemSearchDto, pageable);
+
+        log.info(items.getContent().getFirst().getCategoryNm());
 
         model.addAttribute("items", items);
         model.addAttribute("itemSearchDto", itemSearchDto);

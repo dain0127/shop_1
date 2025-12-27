@@ -97,6 +97,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             List<ItemAdminDto> content = queryFactory
                     .select(Projections.constructor(
                             ItemAdminDto.class,
+                            item.category.categoryNm,
                             item.id,
                             item.itemNm,
                             item.itemSellStatus,

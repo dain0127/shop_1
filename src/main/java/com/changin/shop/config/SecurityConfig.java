@@ -50,8 +50,14 @@ public class SecurityConfig {
                 .passwordParameter("password")
                 .permitAll());
 
-        http.logout(Customizer.withDefaults());
-
+//        http.logout(Customizer.withDefaults());
+        http.logout(logout -> logout
+                .logoutUrl("/member/logout") // 로그아웃을 처리할 URL (기본값은 /logout)
+                .logoutSuccessUrl("/")       // 로그아웃 성공 시 이동할 페이지
+                .invalidateHttpSession(true) // 세션 무효화
+                .deleteCookies("JSESSIONID") // 쿠키 삭제
+                .permitAll()
+        );
         // 각 페이지에 대한 접근 권한 설정
         http.authorizeHttpRequests(request -> request
 //                .requestMatchers("/css/**", "/js/**", "/img/**, "/images/**","/image_sample/**"").permitAll()
