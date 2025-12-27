@@ -5,7 +5,6 @@ import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
 import com.changin.shop.entity.Cart;
 import com.changin.shop.service.CartService;
-import groovy.util.logging.Slf4j;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class CartContoller {
+public class CartController {
 
     private final CartService cartService;
 
@@ -72,7 +71,8 @@ public class CartContoller {
     }
 
     @PatchMapping(value = "/cartItem/{cartItemId}")
-    public @ResponseBody ResponseEntity updateCartItem(@PathVariable("cartItemId") Long cartItemId, int count, Principal principal){
+    public @ResponseBody ResponseEntity updateCartItem(@PathVariable("cartItemId") Long cartItemId
+            , int count, Principal principal){
 
         if(count <= 0){
             return new ResponseEntity<String>("최소 1개 이상 담아주세요", HttpStatus.BAD_REQUEST);

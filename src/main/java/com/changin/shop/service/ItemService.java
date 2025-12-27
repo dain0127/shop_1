@@ -1,8 +1,11 @@
 package com.changin.shop.service;
 
 import com.changin.shop.dto.*;
+import com.changin.shop.entity.Category;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.ItemImg;
+import com.changin.shop.repository.CartRepository;
+import com.changin.shop.repository.CategoryRepository;
 import com.changin.shop.repository.ItemImgRepository;
 import com.changin.shop.repository.ItemRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +29,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemImgService itemImgService;
     private final ItemImgRepository itemImgRepository;
+    private final CategoryRepository categoryRepository;
 
 
     //item 정보 저장하기
@@ -59,8 +63,11 @@ public class ItemService {
         Item item = itemRepository.findById(itemFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
 
+        Category category = categoryRepository.findById(itemFormDto.getCategoryId())
+                .orElseThrow(EntityNotFoundException::new);
+
         //변경 감지(dirty checking)
-        item.updateItem(itemFormDto);
+        item.updateItem(itemFormDto, category);
 
         //2) 이미지 수정
         List<Long> itemImgIdList = itemFormDto.getItemImgIds();

@@ -44,9 +44,17 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //아이템 판매 상태
 
-    public void updateItem(ItemFormDto itemFormDto){
-        ModelMapper mapper = new ModelMapper();
-        mapper.map(itemFormDto, this);
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    public void updateItem(ItemFormDto dto, Category category){
+        this.itemNm = dto.getItemNm();
+        this.price = dto.getPrice();
+        this.stockNumber = dto.getStockNumber();
+        this.itemDetail = dto.getItemDetail();
+        this.itemSellStatus = dto.getItemSellStatus();
+        this.category = category;
     }
 
     public void removeStock(int stockNumber){
@@ -58,5 +66,9 @@ public class Item extends BaseEntity {
 
     public void addStock(int stockNumber){
             this.stockNumber += stockNumber;
+    }
+
+    public void changeCategory(Category category) {
+        this.category = category;
     }
 }

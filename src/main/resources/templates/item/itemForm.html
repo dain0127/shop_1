@@ -60,11 +60,30 @@
         <!-- 상품 수정시에는 id값이 있어야 함 -->
         <input type="hidden" th:field="*{id}">
 
-        <div class="form-group  mb-3">
-            <select th:field="*{itemSellStatus}" class="custom-select">
-                <option value="SELL">판매중</option>
-                <option value="SOLD_OUT">품절</option>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">카테고리</span>
+            </div>
+            <select th:field="*{categoryId}" class="form-control">
+                <option value="">카테고리 선택</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.categoryId}"
+                        th:text="${cat.categoryNm}">
+                </option>
             </select>
+        </div>
+        <p th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" class="fieldError"></p>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">판매 상태</span>
+            </div>
+            <label>
+                <input type="radio" th:field="*{itemSellStatus}" value="SELL"> 판매중
+            </label>
+            <label>
+                <input type="radio" th:field="*{itemSellStatus}" value="SOLD_OUT"> 품절
+            </label>
         </div>
 
         <div class="input-group  mb-3">
@@ -82,6 +101,7 @@
             <input type="number" th:field="*{price}" class="form-control" placeholder="상품의 가격을 입력해주세요">
         </div>
         <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="fieldError">Incorrect data</p>
+
 
         <div class="input-group">
             <div class="input-group-prepend">

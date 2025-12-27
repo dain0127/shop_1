@@ -30,12 +30,16 @@ public class ItemFormDto {
     @NotNull(message = "수량은 필수 입력 값입니다.")
     private int price; //가격
 
+    @NotNull(message = "카테고리를 선택해주세요")
+    private Long categoryId; //카테고리 아이디
+
     private int stockNumber; //재고 수량
 
     @NotBlank(message = "상품에 대한 상세 설명은 필수입니다.")
     private String itemDetail; //상품 상세 설명
 
     private ItemSellStatus itemSellStatus; //아이템 판매 상태
+
 
 
     @Builder.Default
