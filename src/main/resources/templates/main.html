@@ -43,7 +43,7 @@
 
     <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active item">
+            <div th:if="${mainBannerImgUrl} != null" class="carousel-item active item">
                 <img class="d-block w-100 banner"
                      th:src="${mainBannerImgUrl}"
                      alt="First slide">

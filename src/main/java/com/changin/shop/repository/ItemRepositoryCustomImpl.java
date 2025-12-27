@@ -9,6 +9,7 @@ import com.changin.shop.entity.Item;
 import com.changin.shop.entity.QItem;
 import com.changin.shop.entity.QItemImg;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
@@ -67,7 +68,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     //검색어 필터
-    private BooleanExpression searchByLike(String searchBy, String searchQuery) throws NoSuchFieldException {
+    private BooleanExpression searchByLike(String searchBy, String searchQuery)
+            throws NoSuchFieldException {
 
         if(StringUtils.equals("itemNm", searchBy)){
             if(searchQuery == null || searchQuery.equals("null"))
@@ -82,6 +84,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         } else {
             throw new NoSuchFieldException("검색 타입이 존재하는 데이터가 아닙니다.");
         }
+    }
+
+    //카테고리 필터
+    private BooleanExpression searchByCategoryId(Long categoryId) {
+        return categoryId != null ? item.category.id.eq(categoryId) : null;
     }
 
     @Override
@@ -152,7 +159,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                     .on(itemImg.item.eq(item).and(itemImg.repImgYn.eq("Y")))
                     .where(searchRegDateAfter(itemSearchDto.getSearchDateType()),
                             searchSellStatusEq(itemSearchDto.getSearchSellStatus()),
-                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery()))
+                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery())
+                            ,searchByCategoryId(itemSearchDto.getCategoryId()))
                     .orderBy(QItem.item.id.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
@@ -163,7 +171,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                     .from(item)
                     .where(searchRegDateAfter(itemSearchDto.getSearchDateType()),
                             searchSellStatusEq(itemSearchDto.getSearchSellStatus()),
-                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery()))
+                            searchByLike(itemSearchDto.getSearchBy(), itemSearchDto.getSearchQuery())
+                            ,searchByCategoryId(itemSearchDto.getCategoryId()))
                     .fetchOne(); //단건 반환 (전체 그룹 집계함수)
 
             return new PageImpl<MainItemDto>(content, pageable, total);

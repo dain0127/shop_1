@@ -21,6 +21,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import static com.changin.shop.constant.MainPageConstant.*;
+
 @Slf4j
 @Controller
 public class HomeController {
@@ -28,9 +30,6 @@ public class HomeController {
     @Autowired
     private ItemService itemService;
 
-    final int MAX_PAGE_COUNT = 5;
-    final int PAGE_SIZE = 6;
-    final String mainBannerImgUrl = "/img/banner.jpg";
 
     @GetMapping("/")
     public String home(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model){
@@ -45,7 +44,7 @@ public class HomeController {
         model.addAttribute("maxPage", MAX_PAGE_COUNT);
 
 
-        model.addAttribute("mainBannerImgUrl", mainBannerImgUrl);
+        model.addAttribute("mainBannerImgUrl", MAIN_BANNER_IMG_URL);
 
         return "main";
     }

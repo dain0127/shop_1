@@ -1,9 +1,11 @@
 package com.changin.shop.controller;
 
 
+import com.changin.shop.constant.ItemSellStatus;
 import com.changin.shop.dto.ItemAdminDto;
 import com.changin.shop.dto.ItemFormDto;
 import com.changin.shop.dto.ItemSearchDto;
+import com.changin.shop.dto.MainItemDto;
 import com.changin.shop.entity.Item;
 import com.changin.shop.entity.ItemImg;
 import com.changin.shop.repository.ItemImgRepository;
@@ -32,6 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.changin.shop.constant.MainPageConstant.*;
 
 @Slf4j
 @Controller
@@ -130,7 +134,6 @@ public class ItemController {
     }
 
 
-
     //상세 페이지
     @GetMapping("/item/{item_id}")
     public String itemDetail(Model model
@@ -144,6 +147,27 @@ public class ItemController {
             model.addAttribute("errorMessage", "등록된 상품이 없습니다.");
             return "/";
         }
+    }
+
+    //카테고리 아이템 리스트
+    @GetMapping("/items/category/{id}")
+    public String categoryItemList(ItemSearchDto itemSearchDto, Optional<Integer> page,
+            Model model, @PathVariable("id")Long categoryId){
+        Pageable pageable = PageRequest.of(page.orElse(0), PAGE_SIZE);
+
+        itemSearchDto.setSearchBy("itemNm");
+        itemSearchDto.setSearchSellStatus(ItemSellStatus.SELL);
+        itemSearchDto.setCategoryId(categoryId);
+        Page<MainItemDto> items = itemService.getMainItemPage(itemSearchDto, pageable);
+
+        model.addAttribute("items", items);
+        model.addAttribute("itemSearchDto", itemSearchDto);
+        model.addAttribute("maxPage", MAX_PAGE_COUNT);
+
+
+        model.addAttribute("mainBannerImgUrl", null);
+
+        return "main";
     }
 
 

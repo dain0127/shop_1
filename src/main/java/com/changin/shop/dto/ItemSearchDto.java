@@ -18,4 +18,6 @@ public class ItemSearchDto {
     private String searchBy;                    // 검색 조건. itemNM, createdBy
 
     private String searchQuery;                 // 검색어. keyword.
+
+    private Long categoryId;                    //카테고리 id
 }
