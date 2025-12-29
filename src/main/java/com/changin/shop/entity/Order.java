@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Table(name = "orders") //sql 문법 키워드랑 되도록 겹치지 않도록 해야함.
@@ -31,9 +32,11 @@ public class Order extends BaseEntity {
 
     private LocalDateTime orderDate;
 
+    @Column(nullable = true, unique = false)
+    private String orderNumber;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-
 
     //외래키로 참조하고 있는 쪽이 JPA에서는 주인.
     //이쪽은 주인이 아님.
@@ -45,11 +48,12 @@ public class Order extends BaseEntity {
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
-    public static Order createOrder(Member member, List<OrderItem> orderItems){
+    public static Order createOrder(Member member, List<OrderItem> orderItems, String orderNumber){
         Order newOrder = Order.builder()
                 .member(member)
                 .orderDate(LocalDateTime.now())
-                .orderStatus(OrderStatus.ORDER)
+                .orderNumber(orderNumber)
+                .orderStatus(OrderStatus.STAY)
                 .build();
 
 
@@ -68,11 +72,11 @@ public class Order extends BaseEntity {
 
     public int getTotalPrice(){
         int totalPrice = 0;
-        
+
         for(OrderItem orderItem : this.orderItems){
-            totalPrice += orderItem.getTotalPrice();       
+            totalPrice += orderItem.getTotalPrice();
         }
-        
+
         return totalPrice;
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -80,13 +81,15 @@ public class OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item,
                  orderDto.getCount().intValue());
 
-        //order
+        //order (orderItem은 자동으로 추가해 줌.)
         List<OrderItem> orderItemList = new ArrayList<>();
         orderItemList.add(orderItem);
-        Order order = Order.createOrder(member, orderItemList);
+        //임시
+        Order order = Order.createOrder(member, orderItemList, UUID.randomUUID().toString());
+        orderRepository.save(order);
+
 
         //save + remove
-        orderRepository.save(order);
         item.removeStock(orderDto.getCount().intValue());
 
         return order.getId();

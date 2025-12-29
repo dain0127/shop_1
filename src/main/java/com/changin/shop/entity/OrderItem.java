@@ -27,7 +27,6 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
-
     private int orderPrice; //주문 금액
     private int count; //수량
 

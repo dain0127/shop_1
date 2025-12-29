@@ -30,8 +30,7 @@ public class TestController {
     }
 
     @PostMapping(value = "/test")
-    public String testPost(@ModelAttribute TestDto dto){
-        log.info("================>" + dto.toString());
+    public String testPost(){
         return "index";
     }
 

@@ -90,4 +90,21 @@ public class OrderController {
         orderService.cancelOrder(orderId);
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
+
+    @PostMapping("/order/{orderId}/verification")
+    public ResponseEntity<?> orderVerification(@PathVariable("orderId") Long orderId, Principal principal){
+
+        if(!orderService.vaildateOrder(orderId, principal.getName())){
+            return new ResponseEntity<String>("사용자가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        orderService.cancelOrder(orderId);
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+    }
+
+    @GetMapping("/order/complete")
+    public String orderCompleteForm(){
+        return "order/orderComplete";
+    }
+
 }

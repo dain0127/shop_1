@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CartOrderDto {
+    private String orderNumber; //order 고유번호
     private Long cartItemId;
     private List<CartOrderDto> cartOrderDtoList;
 }

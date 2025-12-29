@@ -6,15 +6,13 @@ import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
 import com.changin.shop.dto.OrderDto;
 import com.changin.shop.entity.*;
-import com.changin.shop.repository.CartItemRepository;
-import com.changin.shop.repository.CartRepository;
-import com.changin.shop.repository.ItemRepository;
-import com.changin.shop.repository.MemberRepository;
+import com.changin.shop.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +25,8 @@ public class CartService {
     final private CartItemRepository cartItemRepositroy;
     final private ItemRepository itemRepository;
     final private MemberRepository memberRepository;
+    final private OrderRepository orderRepository;
+
     final private OrderService orderService;
 
     //반환값 : cartId
@@ -103,23 +103,36 @@ public class CartService {
     //선택한 여러개의 상품을 주문한다.
     public Long orderCartItems(CartOrderDto cartOrderDto, String name) {
         List<CartOrderDto> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
-        Long orderId = -1L;
+        if(cartOrderDtoList.isEmpty())
+            throw new IllegalArgumentException("하나 이상의 상품을 선택해주세요.");
 
-        //order cartItemWisely
+        Long orderId;
+        List<OrderItem> newOrderItems = new ArrayList<>();
         for(CartOrderDto dto : cartOrderDtoList){
             CartItem cartItem = cartItemRepositroy.findById(dto.getCartItemId())
                     .orElseThrow(EntityNotFoundException::new);
-            Long itemId = itemRepository.findById(cartItem.getItem().getId())
-                            .orElseThrow(EntityNotFoundException::new).getId();
-
+            Item item = itemRepository.findById(cartItem.getItem().getId())
+                            .orElseThrow(EntityNotFoundException::new);
             int count = cartItem.getCount();
-            orderId = orderService.order(new OrderDto(itemId, (long) count), name);
+
+            //add cartItem to orderItemList
+            newOrderItems.add(OrderItem.createOrderItem(item, count));
+
+            //remove stock from each item
+            item.removeStock(count);
 
             //delete cartItemList from cart
             cartItemRepositroy.delete(cartItem);
         }
 
-        return cartOrderDtoList.isEmpty() ? -1L : orderId;
+        //save order
+        Member member = memberRepository.findByEmail(name)
+                .orElseThrow(EntityNotFoundException::new);
+        orderId = orderRepository.save(Order.createOrder(member, newOrderItems, cartOrderDto.getOrderNumber()))
+                .getId();
+
+
+        return orderId;
     }
 
     public void updateCartItemCount(Long cartItemId, int count) {

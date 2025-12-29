@@ -6,21 +6,22 @@
 <head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <!-- PortOne V2 SDK -->
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 </head>
 
-<!-- 사용자 스크립트 추가 -->
 <th:block layout:fragment="script">
-
     <script th:inline="javascript">
 
+        let orderTotalPrice = 0;
+
         $(document).ready(function(){
-            getOrderTotalPrice();
+            calculateOrderTotalPrice();
         });
 
-        function getOrderTotalPrice() {
-            console.log("getOrderTotalPrice is called by js")
-
-            var orderTotalPrice = 0;
+        function calculateOrderTotalPrice() {
+            orderTotalPrice = 0;
 
             $("tr[data-cart-item-id]").each(function () {
                 var cartItemId = $(this).data("cart-item-id");
@@ -28,80 +29,102 @@
                 var price = Number($("#price_" + cartItemId).data("price"));
                 var count = Number($("#count_" + cartItemId).data("count"));
 
-                console.log("price : " + price);
-                console.log("count : " + count);
-
                 if (!isNaN(price) && !isNaN(count)) {
                     orderTotalPrice += price * count;
                 }
             });
 
-            console.log("orderTotalPrice : " + orderTotalPrice);
-
             $("#orderTotalPrice").text(orderTotalPrice.toLocaleString() + "원");
         }
 
+        // 결제 버튼 클릭
+        async function orders(){
 
-        function orders(){
+            if(orderTotalPrice <= 0){
+                alert("결제 금액이 올바르지 않습니다.");
+                return;
+            }
+
+            const buyerInfo = {
+                email: "test@test.com",
+                name: "백창인",
+                tel: "010-1234-5678"
+            };
+
+            //1. 포트원 결제 요청
+            const paymentResponse = await PortOne.requestPayment({
+                storeId: "store-66c4aa8f-78f4-4233-8d5d-5887d514358e",
+                channelKey: "channel-key-59bdace8-0fee-49a6-8983-8682db279056",
+                paymentId: crypto.randomUUID(),
+                orderName: "changin shop의 상품 결제",
+                totalAmount: orderTotalPrice,
+                currency: "KRW",
+                payMethod: "CARD",
+                customer: {
+                    fullName: "백창인",
+                    phoneNumber: "010-1234-5678",
+                    email: "dain0126@naver.com"
+                },
+            });
+
+            if (paymentResponse.code) {
+
+
+
+                //결제 실패 로그 서버에 남기기.
+
+
+
+                alert("결제가 취소되었습니다.");
+                return;
+            }
+
+            //2. 서버로 결제 검증 + 주문 생성 요청
+            requestOrder(paymentResponse.paymentId);
+        }
+
+        function requestOrder(paymentId){
+
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 
             var url = "/cart/orders";
-
-            var dataList = new Array();
-            var paramData = new Object();
-
-            var lastCartItemId = null;
+            var lastCartItemId;
+            var dataList = [];
 
             $("tr[data-cart-item-id]").each(function() {
                 var cartItemId = $(this).data("cart-item-id");
+                dataList.push({ cartItemId: cartItemId });
                 lastCartItemId = cartItemId;
-
-                dataList.push({
-                    cartItemId: cartItemId,
-                    cartOrderDtoList: null
-                });
             });
 
-            paramData.cartItemId = lastCartItemId;
-            paramData.cartOrderDtoList = dataList;
-
-
-            var param = JSON.stringify(paramData);
+            var paramData = {
+                orderNumber: paymentId,
+                cartItemId: lastCartItemId,
+                cartOrderDtoList: dataList,
+            };
 
             $.ajax({
-                url      : url,
-                type     : "POST",
-                contentType : "application/json",
-                data     : param,
-                beforeSend : function(xhr){
-                    // 데이터를 전송하기 전에 헤더에 csrf값을 설정
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(paramData),
+                beforeSend: function(xhr){
                     xhr.setRequestHeader(header, token);
                 },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
-                    location.href='/orders';
+                success: function(){
+                    location.href = "/order/complete";
                 },
-                error : function(jqXHR, status, error){
-
-                    if(jqXHR.status == '401'){
-                        alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
-                        alert(jqXHR.responseJSON.message);
-                    }
-
+                error: function(jqXHR){
+                    console.log("===========fail============")
+                    alert(jqXHR.responseText);
                 }
             });
         }
-        
 
     </script>
-
 </th:block>
 
-<!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
         .content-mg{
@@ -130,68 +153,59 @@
 
 <div layout:fragment="content" class="content-mg">
 
-    <h2 class="mb-4">
-        주문 목록
+    <h2 class="mb-4">주문 목록</h2>
+
+    <table class="table">
+        <thead>
+        <tr class="text-center">
+            <td>상품정보</td>
+            <td>개수</td>
+            <td>상품금액</td>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="cartItem : ${cartItems}"
+            th:data-cart-item-id="${cartItem.cartItemId}">
+
+            <td class="d-flex">
+                <div class="repImgDiv align-self-center">
+                    <img th:src="${cartItem.imgUrl}" class="rounded repImg">
+                </div>
+                <div class="align-self-center">
+                    <span th:text="${cartItem.itemNm}" class="fs24 font-weight-bold"></span>
+                    <div class="fs18">
+                        <span th:id="'price_' + ${cartItem.cartItemId}"
+                              th:data-price="${cartItem.price}"
+                              th:text="${cartItem.price} + '원'"></span>
+                    </div>
+                </div>
+            </td>
+
+            <td class="text-center">
+                <span th:id="'count_' + ${cartItem.cartItemId}"
+                      th:data-count="${cartItem.count}"
+                      th:text="${cartItem.count} + '개'"></span>
+            </td>
+
+            <td class="text-center">
+                <span th:text="${cartItem.price * cartItem.count} + '원'"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="text-center">
+        총 주문 금액 :
+        <span id="orderTotalPrice" class="text-danger">0원</span>
     </h2>
 
-    <div>
-
-        <table class="table">
-            <colgroup>
-                <col width="30%"/>
-                <col width="15%"/>
-                <col width="15%"/>
-            </colgroup>
-            <thead>
-            <tr th:each="cartItem : ${cartItems}"
-                th:data-cart-item-id="${cartItem.cartItemId}">
-            <tr class="text-center">
-                <td>상품정보</td>
-                <td>개수</td>
-                <td>상품금액</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="cartItem : ${cartItems}">
-                <td class="d-flex">
-                    <div class="repImgDiv align-self-center">
-                        <img th:src="${cartItem.imgUrl}" class = "rounded repImg" th:alt="${cartItem.itemNm}">
-                    </div>
-                    <div class="align-self-center">
-                        <span th:text="${cartItem.itemNm}" class="fs24 font-weight-bold"></span>
-                        <div class="fs18 font-weight-light">
-                            <span class="input-group mt-2">
-                                <span th:id="'price_' + ${cartItem.cartItemId}"
-                                      th:data-price="${cartItem.price}"
-                                      th:text="${cartItem.price} + '원'" class="align-self-center mr-2">
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
-                          th:data-count="${cartItem.count}"
-                          th:text="${cartItem.count} + '개'"  class="align-self-center mr-2">
-                    </span>
-                </td>
-                <td class="text-center align-middle">
-                    <span th:id="'totalPrice_' + ${cartItem.cartItemId}"
-                          name="totalPrice" th:text="${cartItem.price * cartItem.count} + '원'">
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <h2 class="text-center">
-            총 주문 금액 : <span id="orderTotalPrice" class="text-danger">0원</span>
-        </h2>
-
-        <div class="text-center mt-3">
-            <button type="button" class="btn btn-primary btn-lg" onclick="orders()">결제하기</button>
-        </div>
-
+    <div class="text-center mt-3">
+        <button type="button"
+                class="btn btn-primary btn-lg"
+                onclick="orders()">
+            결제하기
+        </button>
     </div>
 
 </div>

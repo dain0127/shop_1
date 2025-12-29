@@ -5,6 +5,7 @@ import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
 import com.changin.shop.entity.Cart;
 import com.changin.shop.service.CartService;
+import com.changin.shop.service.PortOnePaymentService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
+    private final PortOnePaymentService portOneService;
 
 
     //카트 추가하기
@@ -138,6 +140,7 @@ public class CartController {
         return "cart/cartOrderPayment";
     }
 
+
     //장바구니 주문하기
     @PostMapping(value = "/cart/orders")
     public @ResponseBody ResponseEntity<?> orderItems(
@@ -153,12 +156,18 @@ public class CartController {
                     , HttpStatus.FORBIDDEN);
         }
 
-        Long orderId = cartService.orderCartItems(cartOrderDto, principal.getName());
+        try {
+            Long orderId = cartService.orderCartItems(cartOrderDto, principal.getName());
+            portOneService.verifyPayment(cartOrderDto.getOrderNumber(), orderId);
+            /*
+                ★★★★★★★★★★★★★★★★★★★★★★★1. 결제 데이터 결함 발견시, 결제 취소하기★★★★★★★★★★★★★★★★★★★★★★★★★
+                ★★★★★★★★★★★★★★★2. 데이터 무결성 검증 후, 재고 빼기, 장바구니 비우기, order status를 SUCCESS로 바꾸기★★★★★★★★★★★★★★
 
-        if(orderId >= 0)
+             */
             return new ResponseEntity<Long>(orderId, HttpStatus.OK);
-        else
-            return new ResponseEntity<String>("하나 이상의 상품을 선택해주세요."
-                    ,HttpStatus.BAD_REQUEST);
+        }
+        catch (IllegalArgumentException | IllegalStateException e){
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 }

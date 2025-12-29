@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- CSS 확장 -->
+<th:block layout:fragment="css">
+    <style>
+        .success-container {
+            max-width: 480px;
+            margin: 100px auto;
+            padding: 50px 40px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .check-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #212529;
+        }
+
+        p {
+            font-size: 15px;
+            color: #6c757d;
+            line-height: 1.7;
+            margin-bottom: 35px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 26px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #212529;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+        }
+
+        .btn-outline {
+            border: 1px solid #ced4da;
+            color: #495057;
+            background: #fff;
+        }
+
+        .btn-outline:hover {
+            background: #f1f3f5;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</th:block>
+
+<!-- 본문 -->
+<div layout:fragment="content">
+    <div class="success-container">
+        <div class="check-icon">✔</div>
+
+        <h1>구매해주셔서 감사합니다!</h1>
+
+        <p>
+            고객님의 주문이 성공적으로 완료되었습니다.<br>
+            소중한 상품을 정성껏 준비하여 빠르게 배송해 드리겠습니다.
+        </p>
+
+        <div class="btn-group">
+            <a href="/orders" class="btn btn-primary">주문 내역 확인</a>
+            <a href="/" class="btn btn-outline">쇼핑 계속하기</a>
+        </div>
+    </div>
+</div>
+
+</html>

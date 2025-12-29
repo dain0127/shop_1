@@ -73,6 +73,8 @@ dependencies {
 
     // env 파일 연결
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
+
+
 }
 
 
