@@ -1,6 +1,7 @@
 package com.changin.shop.service;
 
 
+import com.changin.shop.constant.OrderStatus;
 import com.changin.shop.dto.CartDetailDto;
 import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
@@ -68,10 +69,17 @@ public class CartService {
         return cartItemRepositroy.save(newCartItem).getId();
     }
 
+
     public Cart findCartByName(String name) {
         Member member = memberRepository.findByEmail(name)
                 .orElseThrow(EntityNotFoundException::new);
         return cartRepository.findCartByMember(member);
+    }
+
+    public void updateCartItemCount(Long cartItemId, int count) {
+        CartItem cartItem = cartItemRepositroy.findById(cartItemId)
+                .orElseThrow(EntityNotFoundException::new);
+        cartItem.setCount(count);
     }
 
     public List<CartDetailDto> findCartDetailByCart(Cart cart) {
@@ -100,8 +108,8 @@ public class CartService {
         return memberCart.getId().equals(cartItemCart.getId()) ? true : false;
     }
 
-    //선택한 여러개의 상품을 주문한다.
-    public Long orderCartItems(CartOrderDto cartOrderDto, String name) {
+    //인증 전에 해야하는, 장바구니 주문 처리. 재고 빼기, 장바구니 비우기, order status를 SUCCESS로 바꾸기 제외.
+    public Long orderCartItemsBeforeVerify(CartOrderDto cartOrderDto, String name) {
         List<CartOrderDto> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
         if(cartOrderDtoList.isEmpty())
             throw new IllegalArgumentException("하나 이상의 상품을 선택해주세요.");
@@ -118,11 +126,11 @@ public class CartService {
             //add cartItem to orderItemList
             newOrderItems.add(OrderItem.createOrderItem(item, count));
 
-            //remove stock from each item
-            item.removeStock(count);
-
-            //delete cartItemList from cart
-            cartItemRepositroy.delete(cartItem);
+//            //remove stock from each item
+//            item.removeStock(count);
+//
+//            //delete cartItemList from cart
+//            cartItemRepositroy.delete(cartItem);
         }
 
         //save order
@@ -135,9 +143,35 @@ public class CartService {
         return orderId;
     }
 
-    public void updateCartItemCount(Long cartItemId, int count) {
-        CartItem cartItem = cartItemRepositroy.findById(cartItemId)
+
+    //인증 전에 해야하는, 장바구니 주문 처리. 재고 빼기, 장바구니 비우기, order status를 SUCCESS로 바꾸기.
+    public Long orderCartItemsAfterVerify(CartOrderDto cartOrderDto, Long orderId){
+        List<CartOrderDto> cartOrderDtoList = cartOrderDto.getCartOrderDtoList();
+        if(cartOrderDtoList.isEmpty())
+            throw new IllegalArgumentException("하나 이상의 상품을 선택해주세요.");
+
+        //remove count by each order item, and remove cartItem from cart.
+        for(CartOrderDto dto : cartOrderDtoList){
+            CartItem cartItem = cartItemRepositroy.findById(dto.getCartItemId())
+                    .orElseThrow(EntityNotFoundException::new);
+            Item item = itemRepository.findById(cartItem.getItem().getId())
+                    .orElseThrow(EntityNotFoundException::new);
+            int count = cartItem.getCount();
+
+
+            //remove stock from each item
+            item.removeStock(count);
+            //delete cartItemList from cart
+            cartItemRepositroy.delete(cartItem);
+        }
+
+
+        //change orderStatus of order from SRAY to SUCCESS.
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(EntityNotFoundException::new);
-        cartItem.setCount(count);
+        order.setOrderStatus(OrderStatus.SUCCESS);
+
+        return order.getId();
     }
+
 }

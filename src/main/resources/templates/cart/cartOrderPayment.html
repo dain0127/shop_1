@@ -67,15 +67,10 @@
                 },
             });
 
+            console.log(paymentResponse)
+
             if (paymentResponse.code) {
-
-
-
-                //결제 실패 로그 서버에 남기기.
-
-
-
-                alert("결제가 취소되었습니다.");
+                alert("결제가 실패했습니다: " + paymentResponse.message);
                 return;
             }
 
@@ -84,11 +79,9 @@
         }
 
         function requestOrder(paymentId){
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
 
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-            var url = "/cart/orders";
             var lastCartItemId;
             var dataList = [];
 
@@ -105,19 +98,20 @@
             };
 
             $.ajax({
-                url: url,
+                url: "/cart/orders",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(paramData),
                 beforeSend: function(xhr){
-                    xhr.setRequestHeader(header, token);
+                    xhr.setRequestHeader("X-CSRF-TOKEN", token);
                 },
                 success: function(){
+                    console.log("=========success========")
                     location.href = "/order/complete";
                 },
                 error: function(jqXHR){
-                    console.log("===========fail============")
-                    alert(jqXHR.responseText);
+                    console.log("==========fail==========")
+                    location.href = "/cart";
                 }
             });
         }

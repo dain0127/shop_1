@@ -20,6 +20,7 @@ spring:
 
 
 
+
   ####################################
   # MySql Setting
   ####################################
@@ -85,4 +86,8 @@ logging:
 ####################################
 portone:
   api-secret: V69a0sDpAtNf2gXVhgQROCN3esJlb6Kion727KceFTMAtHtlJp1h1woBuWfbwXYKl70m1MNI8g87Fczc
+
+discord:
+  webhook:
+    url: https://discord.com/api/webhooks/1455465402162483256/zneTNO9OiPfEKMy4B_Rreq6blez6m3TTwb83WSr6Z77GPDiEqpVZHiLC9nUn_T3LcsRy
 

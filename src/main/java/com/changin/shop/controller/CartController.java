@@ -3,6 +3,7 @@ package com.changin.shop.controller;
 import com.changin.shop.dto.CartDetailDto;
 import com.changin.shop.dto.CartItemDto;
 import com.changin.shop.dto.CartOrderDto;
+import com.changin.shop.dto.PaymentFailResultDto;
 import com.changin.shop.entity.Cart;
 import com.changin.shop.service.CartService;
 import com.changin.shop.service.PortOnePaymentService;
@@ -156,18 +157,29 @@ public class CartController {
                     , HttpStatus.FORBIDDEN);
         }
 
-        try {
-            Long orderId = cartService.orderCartItems(cartOrderDto, principal.getName());
-            portOneService.verifyPayment(cartOrderDto.getOrderNumber(), orderId);
-            /*
-                ★★★★★★★★★★★★★★★★★★★★★★★1. 결제 데이터 결함 발견시, 결제 취소하기★★★★★★★★★★★★★★★★★★★★★★★★★
-                ★★★★★★★★★★★★★★★2. 데이터 무결성 검증 후, 재고 빼기, 장바구니 비우기, order status를 SUCCESS로 바꾸기★★★★★★★★★★★★★★
+        String paymentId = cartOrderDto.getOrderNumber();
 
-             */
+        //to STAY
+        Long orderId = cartService.orderCartItemsBeforeVerify(cartOrderDto, principal.getName());
+        try {
+            //1. db결과랑 지금 결과랑 맞지 않는 것.
+            portOneService.verifyPayment(paymentId, orderId);
+
+            //to SUCCESS
+            cartService.orderCartItemsAfterVerify(cartOrderDto, orderId);
             return new ResponseEntity<Long>(orderId, HttpStatus.OK);
         }
         catch (IllegalArgumentException | IllegalStateException e){
+            portOneService.cancelPayment(paymentId, orderId);
+            portOneService.sendPaymentFailDiscordMessage(paymentId, orderId,
+                    e.getMessage());
             return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
+
+//    @PostMapping(value = "/cart/orders/fail")
+//    public @ResponseBody ResponseEntity<?> orderFail(
+//            @RequestBody PaymentFailResultDto failResultDto){
+//
+//    }
 }

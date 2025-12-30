@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
@@ -23,4 +24,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     "where o.member.email = :email"
     )
     Long countOrder(@Param("email") String email);
+
+    @Query("select o from Order o where o.member.id = :memberId")
+    Optional<Order> findByMemberId(Long memberId);
 }
